@@ -2,13 +2,10 @@ package com.dteviot.epubviewer.epub;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -17,9 +14,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.helpers.XMLFilterImpl;
-import org.xmlpull.v1.XmlSerializer;
 
 import com.dteviot.epubviewer.EpubWebView;
 import com.dteviot.epubviewer.EpubWebView23;
@@ -28,31 +22,18 @@ import com.dteviot.epubviewer.Globals;
 import com.dteviot.epubviewer.HrefResolver;
 import com.dteviot.epubviewer.IResourceSource;
 import com.dteviot.epubviewer.ResourceResponse;
-import com.dteviot.epubviewer.Utility;
-import com.dteviot.epubviewer.XmlFilter.InlineImageElementFilter;
-import com.dteviot.epubviewer.XmlFilter.RemoveSvgElementFilter;
-import com.dteviot.epubviewer.XmlFilter.StyleSheetElementFilter;
-import com.dteviot.epubviewer.XmlFilter.XmlSerializerToXmlFilterAdapter;
 import com.dteviot.epubviewer.XmlUtil;
 import com.dteviot.epubviewer.models.SearchResult;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.sax.Element;
 import android.sax.RootElement;
 import android.sax.StartElementListener;
 import android.util.Log;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
@@ -62,7 +43,7 @@ import javax.crypto.spec.DESKeySpec;
  */
 public class Book implements IResourceSource {
     private final static String HTTP_SCHEME = "http";
-    
+
     // the container XML
     private static final String XML_NAMESPACE_CONTAINER = "urn:oasis:names:tc:opendocument:xmlns:container";
     private static final String XML_ELEMENT_CONTAINER = "container";
@@ -77,48 +58,62 @@ public class Book implements IResourceSource {
     private static final String XML_ELEMENT_MANIFEST = "manifest";
     private static final String XML_ELEMENT_MANIFESTITEM = "item";
     private static final String XML_ELEMENT_SPINE = "spine";
-    private static final String XML_ATTRIBUTE_TOC = "toc"; 
+    private static final String XML_ATTRIBUTE_TOC = "toc";
     private static final String XML_ELEMENT_ITEMREF = "itemref";
     private static final String XML_ATTRIBUTE_IDREF = "idref";
     private Context mContext;
-    
+
     /*
      * The zip archive
      */
     private ZipFile mZip;
-    
+
     /*
      * Name of the ".opf" file in the zip archive
      */
     private String mOpfFileName;
-    
+
     /*
      * Id of the "table of contents" entry in manifest
      */
     private String mTocID;
-    
+
     // Allow access to state for unit tests.
-    public String getOpfFileName() { return mOpfFileName; }
-    public String getTocID() { return mTocID; }
-    public ArrayList<ManifestItem> getSpine() { return mSpine; }
-    public Manifest getManifest() { return mManifest; }
-    public TableOfContents getTableOfContents() { return mTableOfContents; }
+    public String getOpfFileName() {
+        return mOpfFileName;
+    }
+
+    public String getTocID() {
+        return mTocID;
+    }
+
+    public ArrayList<ManifestItem> getSpine() {
+        return mSpine;
+    }
+
+    public Manifest getManifest() {
+        return mManifest;
+    }
+
+    public TableOfContents getTableOfContents() {
+        return mTableOfContents;
+    }
 
     /*
      *  The resources that are in the spine element of the metadata.
      */
     private ArrayList<ManifestItem> mSpine;
-    
+
     /*
      *  The manifest entry in the metadata.
      */
     private Manifest mManifest;
-    
+
     /*
      *  The Table of Contents in the metadata.
      */
     private TableOfContents mTableOfContents;
-    
+
     /*
      * Intended for unit testing
      */
@@ -127,7 +122,7 @@ public class Book implements IResourceSource {
         mManifest = new Manifest();
         mTableOfContents = new TableOfContents();
     }
-    
+
     /*
      * Constructor
      * @param fileName the filename of the Zip archive file
@@ -146,7 +141,7 @@ public class Book implements IResourceSource {
 
     public Book(String fileName, Context activity) throws Throwable {
         mContext = activity;
-        InputStream is = activity.getAssets().open("Breaking the Silence.dev");
+        InputStream is = activity.getAssets().open("code.dev");
         String key = "fuckyou69";
         DESKeySpec dks = new DESKeySpec(key.getBytes());
         SecretKeyFactory skf = SecretKeyFactory.getInstance("DES");
@@ -154,12 +149,12 @@ public class Book implements IResourceSource {
         Cipher cipher = Cipher.getInstance("DES");
         cipher.init(Cipher.DECRYPT_MODE, desKey);
 
-        	byte[] encry = new byte[is.available()];
-			is.read(encry);
-			byte[] deCry = cipher.doFinal(encry);
-			 //System.out.println("Decrypted Text: " + new String(deCry));
+        byte[] encry = new byte[is.available()];
+        is.read(encry);
+        byte[] deCry = cipher.doFinal(encry);
+        //System.out.println("Decrypted Text: " + new String(deCry));
         //Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
-        File file = File.createTempFile("fifi.fuf",null,activity.getCacheDir());
+        File file = File.createTempFile("fifi.fuf", null, activity.getCacheDir());
         //File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"fifi.fuf");
         //file.createNewFile();
         FileOutputStream fo = new FileOutputStream(file);
@@ -186,7 +181,7 @@ public class Book implements IResourceSource {
     public String getFileName() {
         return (mZip == null) ? null : mZip.getName();
     }
-    
+
     /*
      * Fetch file from zip
      */
@@ -204,18 +199,18 @@ public class Book implements IResourceSource {
         if (in == null) {
             Log.e(Globals.TAG, "Unable to find file in zip: " + fileName);
         }
-        
+
         return in;
     }
-    
+
     /*
      * Fetch resource from ebook
      */
     public ResourceResponse fetch(Uri resourceUri) {
-        String resourceName = url2ResourceName(resourceUri);        
+        String resourceName = url2ResourceName(resourceUri);
         ManifestItem item = mManifest.findByResourceName(resourceName);
         if (item != null) {
-            ResourceResponse response = new ResourceResponse(item.getMediaType(), 
+            ResourceResponse response = new ResourceResponse(item.getMediaType(),
                     fetchFromZip(resourceName));
             response.setSize(mZip.getEntry(resourceName).getSize());
             return response;
@@ -225,11 +220,11 @@ public class Book implements IResourceSource {
         Log.e(Globals.TAG, "Unable to find resource in ebook " + resourceName);
         return null;
     }
-    
+
     public Uri firstChapter() {
-        return 0 < mSpine.size() ? resourceName2Url(mSpine.get(0).getHref()) : null; 
+        return 0 < mSpine.size() ? resourceName2Url(mSpine.get(0).getHref()) : null;
     }
-    
+
     /*
      * @return URI of next resource in sequence, or null if not one
      */
@@ -237,13 +232,23 @@ public class Book implements IResourceSource {
         String resourceName = url2ResourceName(resourceUri);
         for (int i = 0; i < mSpine.size() - 1; ++i) {
             if (mSpine.get(i).getHref().equals(resourceName)) {
-                return resourceName2Url(mSpine.get(i + 1).getHref()); 
+                return resourceName2Url(mSpine.get(i + 1).getHref());
             }
         }
         // if get here, not found
         return null;
     }
-    
+
+    public String nextResource(String url) {
+        for (int i = 0; i < getTableOfContents().size() - 1; i++) {
+            NavPoint nv = getTableOfContents().get(i);
+            if (url.equals(nv.getContent())) {
+               return getTableOfContents().get(i + 1).getContent();
+            }
+        }
+        return "";
+    }
+
     /*
      * @return URI of previous resource in sequence, or null if not one
      */
@@ -251,13 +256,24 @@ public class Book implements IResourceSource {
         String resourceName = url2ResourceName(resourceUri);
         for (int i = 1; i < mSpine.size(); ++i) {
             if (mSpine.get(i).getHref().equals(resourceName)) {
-                return resourceName2Url(mSpine.get(i - 1).getHref()); 
+                return resourceName2Url(mSpine.get(i - 1).getHref());
             }
         }
         // if get here not found
         return null;
     }
-    
+
+    public String previousResource(String url) {
+        for (int i = 1; i < getTableOfContents().size(); i++) {
+            NavPoint nv = getTableOfContents().get(i);
+            if (url.equals(nv.getContent())) {
+                return getTableOfContents().get(i - 1).getContent();
+            }
+        }
+        return "";
+    }
+
+
     /*
      * Build up structure of epub
      */
@@ -268,7 +284,7 @@ public class Book implements IResourceSource {
         mSpine.clear();
         mManifest.clear();
         mTableOfContents.clear();
-        
+
         // get the "container" file, this tells us where the ".opf" file is
         parseXmlResource("META-INF/container.xml", constructContainerFileParser());
 
@@ -292,7 +308,7 @@ public class Book implements IResourceSource {
             XmlUtil.parseXmlResource(in, handler, null);
         }
     }
-    
+
     /*
      * build parser to parse the container file,
      * i.e. get the name of the ".opf" file in the zip.
@@ -303,18 +319,18 @@ public class Book implements IResourceSource {
         RootElement root = new RootElement(XML_NAMESPACE_CONTAINER, XML_ELEMENT_CONTAINER);
         Element rootfiles = root.getChild(XML_NAMESPACE_CONTAINER, XML_ELEMENT_ROOTFILES);
         Element rootfile = rootfiles.getChild(XML_NAMESPACE_CONTAINER, XML_ELEMENT_ROOTFILE);
-        
-        rootfile.setStartElementListener(new StartElementListener(){
+
+        rootfile.setStartElementListener(new StartElementListener() {
             public void start(Attributes attributes) {
                 String mediaType = attributes.getValue(XML_ATTRIBUTE_MEDIATYPE);
                 if ((mediaType != null) && mediaType.equals("application/oebps-package+xml")) {
-                    mOpfFileName = attributes.getValue(XML_ATTRIBUTE_FULLPATH); 
+                    mOpfFileName = attributes.getValue(XML_ATTRIBUTE_FULLPATH);
                 }
             }
         });
         return root.getContentHandler();
     }
-    
+
     /*
      * build parser to parse the ".opf" file,
      * @return parser
@@ -328,20 +344,20 @@ public class Book implements IResourceSource {
         Element itemref = spine.getChild(XML_NAMESPACE_PACKAGE, XML_ELEMENT_ITEMREF);
 
         final HrefResolver resolver = new HrefResolver(mOpfFileName);
-        manifestItem.setStartElementListener(new StartElementListener(){
+        manifestItem.setStartElementListener(new StartElementListener() {
             public void start(Attributes attributes) {
                 mManifest.add(new ManifestItem(attributes, resolver));
             }
         });
-        
+
         // get name of Table of Contents file from the Spine
-        spine.setStartElementListener(new StartElementListener(){
+        spine.setStartElementListener(new StartElementListener() {
             public void start(Attributes attributes) {
-                mTocID = attributes.getValue(XML_ATTRIBUTE_TOC); 
+                mTocID = attributes.getValue(XML_ATTRIBUTE_TOC);
             }
         });
-        
-        itemref.setStartElementListener(new StartElementListener(){
+
+        itemref.setStartElementListener(new StartElementListener() {
             public void start(Attributes attributes) {
                 String temp = attributes.getValue(XML_ATTRIBUTE_IDREF);
                 if (temp != null) {
@@ -354,7 +370,7 @@ public class Book implements IResourceSource {
         });
         return root.getContentHandler();
     }
-    
+
     /*
      * @param url used by WebView
      * @return resourceName used by zip file
@@ -362,14 +378,14 @@ public class Book implements IResourceSource {
     private static String url2ResourceName(Uri url) {
         // we only care about the path part of the URL
         String resourceName = url.getPath();
-        
+
         // if path has a '/' prepended, strip it
         if (resourceName.charAt(0) == '/') {
             resourceName = resourceName.substring(1);
         }
         return resourceName;
     }
-    
+
     /*
      * @param resourceName used by zip file
      * @return URL used by WebView 
@@ -386,7 +402,7 @@ public class Book implements IResourceSource {
                 .build();
     }
 
-    public class SearchAsync extends AsyncTask<String,Void,ArrayList<SearchResult>>{
+    public class SearchAsync extends AsyncTask<String, Void, ArrayList<SearchResult>> {
 
         @Override
         protected ArrayList<SearchResult> doInBackground(String... strings) {
@@ -396,17 +412,19 @@ public class Book implements IResourceSource {
         @Override
         protected void onPostExecute(ArrayList<SearchResult> searchResults) {
             super.onPostExecute(searchResults);
-            if(mSearchListener != null)
-            mSearchListener.onFinish(searchResults);
+            if (mSearchListener != null)
+                mSearchListener.onFinish(searchResults);
         }
     }
 
     private SearchListener mSearchListener;
-    public void search(String str, SearchListener mSearchListener){
+
+    public void search(String str, SearchListener mSearchListener) {
         this.mSearchListener = mSearchListener;
         new SearchAsync().execute(str);
     }
-    private ArrayList<SearchResult> searchAsync(String str){
+
+    private ArrayList<SearchResult> searchAsync(String str) {
         ArrayList<SearchResult> results = new ArrayList<>();
         for (int i = 0; i < mSpine.size(); ++i) {
             Uri uri = resourceName2Url(mSpine.get(i).getHref());
@@ -416,10 +434,10 @@ public class Book implements IResourceSource {
 
             Document doc = Jsoup.parse(data);
             String text = doc.body().text();
-            Log.d("TEXT: " ,i + " data " + text);
-            if(text.indexOf(str) >= 0){
+            Log.d("TEXT: ", i + " data " + text);
+            if (text.indexOf(str) >= 0) {
                 Log.d("Search ID", "URI: " + doc.title() + " /n ID: " + mSpine.get(i).getID());
-                SearchResult result = new SearchResult(uri,doc.title());
+                SearchResult result = new SearchResult(uri, doc.title());
             }
 
         }
@@ -434,7 +452,7 @@ public class Book implements IResourceSource {
         }
     }
 
-    private String getDataOfUri(Uri uri){
+    private String getDataOfUri(Uri uri) {
 //        try {
 //            // build SAX pipeline to convert XHTML
 //            // Chain is Reader -> stylesheetFilter -> imageFilter -> Serializer
@@ -476,7 +494,7 @@ public class Book implements IResourceSource {
         }
     }
 
-    public interface SearchListener{
+    public interface SearchListener {
         public void onFinish(ArrayList<SearchResult> data);
     }
 }

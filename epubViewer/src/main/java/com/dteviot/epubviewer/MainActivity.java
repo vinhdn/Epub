@@ -1,9 +1,12 @@
 package com.dteviot.epubviewer;
 
+import com.dteviot.epubviewer.Utils.SAutoBgImageButton;
 import com.dteviot.epubviewer.WebServer.FileRequestHandler;
 import com.dteviot.epubviewer.WebServer.ServerSocketThread;
 import com.dteviot.epubviewer.WebServer.WebServer;
+import com.dteviot.epubviewer.database.dao.MyDAOFactory;
 import com.dteviot.epubviewer.epub.Book;
+import com.dteviot.epubviewer.epub.NavPoint;
 import com.dteviot.epubviewer.epub.TableOfContents;
 import com.dteviot.epubviewer.models.SearchResult;
 
@@ -25,19 +28,22 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.zip.Inflater;
 
-public class MainActivity extends Activity implements IResourceSource, View.OnClickListener{
+public class MainActivity extends Activity implements IResourceSource, View.OnClickListener, EpubWebView.OnPageURLListener{
     private final static int LIST_EPUB_ACTIVITY_ID = 0; 
     private final static int LIST_CHAPTER_ACTIVITY_ID = 1; 
     private final static int CHECK_TTS_ACTIVITY_ID = 2; 
     
     public static final String BOOKMARK_EXTRA = "BOOKMARK_EXTRA";
     private Uri mCurrentUri;
-    private RelativeLayout mControllerRL;
+    private String mCurrentUrl;
+    private NavPoint mCurChapter;
+    private RelativeLayout mControllerRL,mTitle;
     private EbookApplication mApp;
     /*
      * the app's main view
      */
     private EpubWebView mEpubWebView;
+    private SAutoBgImageButton mBookmarkBtn;
     
 
     private ServerSocketThread mWebServerThread = null;
@@ -47,41 +53,63 @@ public class MainActivity extends Activity implements IResourceSource, View.OnCl
         super.onCreate(savedInstanceState);
         mApp = (EbookApplication) getApplication();
 
-        //setContentView(R.layout.activity_main);
-        Log.d("time 01", System.currentTimeMillis() +"");
         RelativeLayout view = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.activity_main,null);
+        RelativeLayout content =(RelativeLayout) view.findViewById(R.id.book_content);
         mControllerRL = (RelativeLayout)view.findViewById(R.id.controller);
-        //mEpubWebView = (EpubWebView) findViewById(R.id.webview);
         mEpubWebView = createView();
         mEpubWebView.setApp(mApp);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        //params.addRule(RelativeLayout.ABOVE, R.id.controller);
 
 
 
-        view.addView(mEpubWebView, params);
+        content.addView(mEpubWebView, params);
         mControllerRL.bringToFront();
         setContentView(view);
 
-        //setContentView(mEpubWebView);
-        Log.d("time 02", System.currentTimeMillis() + "");
         new LoadEpubAsyncTask().execute();
-
-        findViewById(R.id.next_btn).setOnClickListener(this);
-        findViewById(R.id.previous_btn).setOnClickListener(this);
-
+        initViews();
     }
 
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
+    private void initViews(){
+        mTitle = (RelativeLayout) findViewById(R.id.title);
+        findViewById(R.id.next_btn).setOnClickListener(this);
+        findViewById(R.id.previous_btn).setOnClickListener(this);
+        findViewById(R.id.home_btn).setOnClickListener(this);
+        findViewById(R.id.chapter_btn).setOnClickListener(this);
+        findViewById(R.id.search_btn).setOnClickListener(this);
+        findViewById(R.id.show_bookmark_btn).setOnClickListener(this);
+        findViewById(R.id.book_content).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("Book Content","OnClick::");
+                if(mControllerRL.getVisibility() != View.GONE)
+                    mControllerRL.setVisibility(View.GONE);
+                else
+                    mControllerRL.setVisibility(View.VISIBLE);
+            }
+        });
+        mBookmarkBtn = (SAutoBgImageButton) findViewById(R.id.bookmark_btn);
+        mBookmarkBtn.setOnClickListener(this);
+        mEpubWebView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("EpubWebView", "OnClick::");
+                if (mControllerRL.getVisibility() != View.GONE) {
+                    mControllerRL.setVisibility(View.GONE);
+                    mTitle.setVisibility(View.GONE);
+                } else {
+                    mControllerRL.setVisibility(View.VISIBLE);
+                    mTitle.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        mEpubWebView.setOnPageURLListenner(this);
+        mEpubWebView.getScrollY();
+        initData();
+    }
 
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                loadEpub("",null);
-//            }
-//        });
+    private void initData(){
+
     }
 
     private ServerSocketThread createWebServer() {
@@ -98,38 +126,6 @@ public class MainActivity extends Activity implements IResourceSource, View.OnCl
         }
     }
     
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-        case R.id.menu_chapters:
-            launchChaptersList();
-            return true;
-        case R.id.menu_bookmarks:
-            mApp.getBook().search("A Family that Fights", new Book.SearchListener() {
-                @Override
-                public void onFinish(ArrayList<SearchResult> data) {
-
-                }
-            });
-                return true;
-        default:
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void launchBookList() {
-        Intent listComicsIntent = new Intent(this, ListEpubActivity.class);
-        startActivityForResult(listComicsIntent, LIST_EPUB_ACTIVITY_ID);
-    }
-
     private void launchChaptersList() {
         Book book = getBook(); 
         if (book == null) {
@@ -149,9 +145,6 @@ public class MainActivity extends Activity implements IResourceSource, View.OnCl
     private void launchBookmarkDialog() {
         BookmarkDialog dlg = new BookmarkDialog(this);
         dlg.show();
-        dlg.setSetBookmarkAction(mSaveBookmark);
-        dlg.setGotoBookmarkAction(mGotoBookmark);
-        dlg.setStartSpeechAction(mStartSpeech);
     }
 
     /*
@@ -190,8 +183,32 @@ public class MainActivity extends Activity implements IResourceSource, View.OnCl
         Uri chapterUri = data.getParcelableExtra(ListChaptersActivity.CHAPTER_EXTRA);
         String url = data.getStringExtra(ListChaptersActivity.CHAPTER_URL);
         mEpubWebView.loadChapter(chapterUri);
-        mCurrentUri = chapterUri;
 //        mEpubWebView.loadChapterURL(url);
+    }
+
+    @Override
+    public void onPageChange(String URL) {
+        mCurChapter = mEpubWebView.getPositionOfUrl(URL);
+        Log.d("CurrentChapter","ID: " + mCurChapter.getPlayOrder() + " ContentURL: " + mCurChapter.getContent());
+        if(mCurChapter.getPlayOrder() > 0){
+            if(MyDAOFactory.instance(this).getBookmarkDAO().isSaved(mCurChapter.getPlayOrder())){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBookmarkBtn.setBackgroundResource(R.drawable.saved_bookmarkx180);
+                    }
+                });
+            }else{
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mBookmarkBtn.setBackgroundResource(R.drawable.bookmarkx180);
+                    }
+                });
+            }
+        }
+        mCurrentUri = Uri.parse(URL);
+        mCurrentUrl = URL;
     }
 
     class LoadEpubAsyncTask extends AsyncTask<Void,Void,Void>{
@@ -202,7 +219,7 @@ public class MainActivity extends Activity implements IResourceSource, View.OnCl
             Log.d("time 03", System.currentTimeMillis() +"");
             mDialogLoading = new ProgressDialog(MainActivity.this,ProgressDialog.STYLE_SPINNER);
             mDialogLoading.setIndeterminate(true);
-            mDialogLoading.setMessage("Loading");
+            mDialogLoading.setMessage("Loading book");
             mDialogLoading.setCancelable(false);
             mDialogLoading.show();
 
@@ -212,7 +229,7 @@ public class MainActivity extends Activity implements IResourceSource, View.OnCl
         protected Void doInBackground(Void... epubWebViews) {
             mEpubWebView.setBook("");
             mEpubWebView.loadChapter(mEpubWebView.getBook().firstChapter());
-            mCurrentUri = getBook().firstChapter();
+//            mCurrentUri = getBook().firstChapter();
             mWebServerThread = createWebServer();
             mWebServerThread.startThread();
             return null;
@@ -230,42 +247,13 @@ public class MainActivity extends Activity implements IResourceSource, View.OnCl
     private void loadEpub(String fileName, Uri chapterUri) {
         mEpubWebView.setBook(fileName);
         mEpubWebView.loadChapter(chapterUri);
-        if(chapterUri == null){
-            mCurrentUri = getBook().firstChapter();
-        }else
-            mCurrentUri = chapterUri;
+//        if(chapterUri == null){
+//            mCurrentUri = getBook().firstChapter();
+//        }else
+//            mCurrentUri = chapterUri;
 
 
     }
-    
-    protected void onSaveInstanceState (Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Bookmark bookmark = mEpubWebView.getBookmark();
-        if (bookmark != null) {
-            bookmark.save(outState);
-        }
-    }
-
-    private IAction mSaveBookmark = new IAction() {
-        public void doAction() {
-            Bookmark bookmark = mEpubWebView.getBookmark();
-            if (bookmark != null) {
-                bookmark.saveToSharedPreferences(MainActivity.this);
-            }
-        }
-    };
-
-    private IAction mGotoBookmark = new IAction() {
-        public void doAction() {
-            mEpubWebView.gotoBookmark(new Bookmark(MainActivity.this));
-        }
-    };
-
-    private IAction mStartSpeech = new IAction() {
-        public void doAction() {
-        }
-    };
-    
 
     @Override
     protected void onDestroy() {
@@ -291,20 +279,49 @@ public class MainActivity extends Activity implements IResourceSource, View.OnCl
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.previous_btn:
-                Uri uriPre = getBook().previousResource(mCurrentUri);
+                Uri uriPre = Uri.parse(getBook().previousResource(mCurChapter.getContent()));
                 if(uriPre != null) {
                     mEpubWebView.loadChapter(uriPre);
-                    mCurrentUri = uriPre;
+//                    mCurrentUri = uriPre;
                 }
                 break;
             case R.id.next_btn:
-                Uri uriNext= getBook().nextResource(mCurrentUri);
+                Uri uriNext= Uri.parse(getBook().nextResource(mCurChapter.getContent()));
                 if(uriNext != null) {
                     mEpubWebView.loadChapter(uriNext);
-                    mCurrentUri = uriNext;
+//                    mCurrentUri = uriNext;
                 }
                 break;
-            default:
+            case R.id.home_btn:
+                finish();
+                break;
+            case R.id.chapter_btn:
+                launchChaptersList();
+                break;
+            case R.id.search_btn:
+                break;
+            case R.id.bookmark_btn:
+                if(mCurChapter.getPlayOrder() > 0) {
+                    if(!MyDAOFactory.instance(this).getBookmarkDAO().isSaved(mCurChapter.getPlayOrder())) {
+                        MyDAOFactory.instance(this).getBookmarkDAO().insertRow(new Bookmark(mCurChapter.getPlayOrder(), mCurChapter.getNavLabel(), mCurChapter.getContent(), mEpubWebView.getScrollY()));
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mBookmarkBtn.setBackgroundResource(R.drawable.saved_bookmarkx180);
+                            }
+                        });
+                    }else{
+                        MyDAOFactory.instance(this).getBookmarkDAO().deleteRow(mCurChapter.getPlayOrder());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mBookmarkBtn.setBackgroundResource(R.drawable.bookmarkx180);
+                            }
+                        });
+                    }
+                }
+                break;
+            case R.id.show_bookmark_btn:
                 break;
         }
     }

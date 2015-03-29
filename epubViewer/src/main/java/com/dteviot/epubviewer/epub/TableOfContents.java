@@ -74,7 +74,13 @@ public class TableOfContents {
     public void pack(Intent intent, String key) {
         intent.putExtra(key, mNavPoints);
     }
-    
+
+    public int getPositionOfChapter(String url){
+        for (int i = 0; i < mNavPoints.size(); i++) {
+        }
+        return -1;
+    }
+
     /*
      * build parser to parse the "Table of Contents" file,
      * @return parser

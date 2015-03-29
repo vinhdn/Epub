@@ -12,6 +12,7 @@ import com.dteviot.epubviewer.XmlFilter.XmlSerializerToXmlFilterAdapter;
 import com.dteviot.epubviewer.epub.Book;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -54,7 +55,13 @@ public class EpubWebView23 extends EpubWebView {
                 super.onPageFinished(view, url);
                 onPageLoaded();
             }
-        };        
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                onChapterChanged(url);
+            }
+        };
     }
 
     /*

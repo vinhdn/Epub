@@ -3,6 +3,7 @@ package com.dteviot.epubviewer;
 import java.util.ArrayList;
 
 import com.dteviot.epubviewer.epub.Book;
+import com.dteviot.epubviewer.epub.NavPoint;
 
 import android.content.Context;
 import android.graphics.Picture;
@@ -13,6 +14,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -23,6 +25,13 @@ import android.webkit.WebViewClient;
  * special WebView handling
  */
 public abstract class EpubWebView extends WebView {
+
+    public interface OnPageURLListener{
+        public void onPageChange(String URL);
+    }
+
+    private OnPageURLListener mPageURLListener;
+
     private final static float FLING_THRESHOLD_VELOCITY = 200;
 
     /*
@@ -172,6 +181,40 @@ public abstract class EpubWebView extends WebView {
              super.onTouchEvent(event);
     }
 
+    private OnClickListener onClickListener;
+
+    @Override
+    public void setOnClickListener(OnClickListener l) {
+        super.setOnClickListener(l);
+        onClickListener = l;
+    }
+
+    public NavPoint getCurrentChapter(){
+        NavPoint chapter = new NavPoint();
+        Log.d("This Chapter","URL = " + getUrl());
+        for (int i = 0; i < getBook().getTableOfContents().size(); i++) {
+            NavPoint nv = getBook().getTableOfContents().get(i);
+            Log.d("NavPoit", "POSITION : " + i + "  " + nv.getContent());
+            if(getUrl().equals(nv.getContent()))
+                return nv;
+        }
+        return chapter;
+    }
+
+    public NavPoint getPositionOfUrl(String url){
+        for (int i = 0; i < getBook().getTableOfContents().size(); i++) {
+            NavPoint nv = getBook().getTableOfContents().get(i);
+            Log.d("NavPoit", "POSITION : " + i + "  " + nv.getContent());
+            if(url.equals(nv.getContent()))
+                return nv;
+        }
+        return new NavPoint();
+    }
+
+    public void setOnPageURLListenner(OnPageURLListener listenner){
+        this.mPageURLListener = listenner;
+    }
+
     GestureDetector.SimpleOnGestureListener mGestureListener = new GestureDetector.SimpleOnGestureListener() {
         @Override
         public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
@@ -196,14 +239,16 @@ public abstract class EpubWebView extends WebView {
                 }
             }
         }
-        
+
         /*
-         * If double tap at top/bottom fifth of screen, scroll page up/down
-         * 
-         */
+                         * If double tap at top/bottom fifth of screen, scroll page up/down
+                         *
+                         */
         @Override
         public boolean onDoubleTap (MotionEvent e) {
             float y = e.getY();
+            if(onClickListener != null)
+                onClickListener.onClick(EpubWebView.this);
             if (y <= mRawScreenDimensions.height() / 5) {
                 if (!pageUp(false)) {
                 	changeChapter(mApp.getBook().previousResource(mCurrentResourceUri));
@@ -228,48 +273,6 @@ public abstract class EpubWebView extends WebView {
         } else {
             Utility.showToast(getContext(), R.string.end_of_book);
             return false;
-        }
-    }
-    
-    /*
-     * Store current view into bookmark
-     */
-    public Bookmark getBookmark() {
-        if ((mApp.getBook() != null) && (mCurrentResourceUri != null)) {
-            float contentHeight = (float)getContentHeight();
-            contentHeight = (contentHeight == 0.0f) ? 0.0f : getScrollY() / contentHeight; 
-            return new Bookmark (
-                mApp.getBook().getFileName(),
-                mCurrentResourceUri,
-                contentHeight
-            );
-        }
-        return null;
-    }
-
-    public void gotoBookmark(Bookmark bookmark) {
-        if (!bookmark.isEmpty()) {
-            mScrollY = bookmark.mScrollY;
-
-            // get notify when content height is available, for setting Y scroll position
-            mScrollWhenPageLoaded = true;
-            setBook(bookmark.getFileName());
-            loadChapter(bookmark.getResourceUri());
-        }
-    }
-
-    public void speak(TextToSpeechWrapper ttsWrapper) {
-        mTtsWrapper = ttsWrapper;
-        if ((mApp.getBook() != null) && (mCurrentResourceUri != null)) {
-            mText = new ArrayList<String>();
-            XmlUtil.parseXmlResource(
-                    mApp.getBook().fetch(mCurrentResourceUri).getData(),
-                    new XhtmlToText(mText), null);
-            mTextLine = 0;
-            mTtsWrapper.setOnUtteranceCompletedListener(mCompletedListener);
-            if (0 < mText.size()) {
-                mTtsWrapper.speak(mText.get(0));
-            }
         }
     }
 
@@ -307,15 +310,20 @@ public abstract class EpubWebView extends WebView {
             setPictureListener(mPictureListener);
             mScrollWhenPageLoaded = false;
         }
-        findAll("Story of Sammy");
-        findFocus();
 //        String[] sp = getUrl().split("#");
 //        Log.d("URL", getUrl());
 //        if(sp.length > 1){
 //            loadUrl("#" + sp[1]);
 //        }
     }
-    
+
+    protected void onChapterChanged(String url){
+        if(mPageURLListener != null){
+            mPageURLListener.onPageChange(url);
+        }
+
+    }
+
     /*
      * Need to wait until view has figured out how big web page is
      * Otherwise, we can't scroll to last position because 

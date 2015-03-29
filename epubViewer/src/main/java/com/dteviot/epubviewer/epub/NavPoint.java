@@ -4,6 +4,8 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.dteviot.epubviewer.Globals;
+
 /*
  * Navpoint entry in a Table of Contents.
  */
@@ -14,8 +16,13 @@ public class NavPoint implements Parcelable {
     
     public int getPlayOrder() { return mPlayOrder; }
     public String getNavLabel() { return mNavLabel; }
-    public String getContent() { return mContent; }
+    public String getContent() { return "http://localhost:" + Globals.WEB_SERVER_PORT + "/" + mContent; }
 
+    public NavPoint(){
+        this.mPlayOrder = -1;
+        this.mNavLabel = "";
+        this.mContent = "";
+    }
     /*
      * Sometimes the content (resourceName) contains a tag 
      * into the HTML. 

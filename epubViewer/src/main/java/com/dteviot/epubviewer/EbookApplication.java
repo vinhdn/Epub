@@ -20,7 +20,7 @@ public class EbookApplication extends Application {
          */
     public void setBook(String fileName) {
         // if book already loaded, don't load again
-        if ((mBook == null) || !mBook.getFileName().equals(fileName)) {
+        if ((mBook == null)) {
             try {
                 mBook = new Book(fileName,this);
             } catch (Throwable throwable) {

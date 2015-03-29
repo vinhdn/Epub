@@ -2,6 +2,7 @@ package com.dteviot.epubviewer;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -50,7 +51,20 @@ public class EpubWebView30 extends EpubWebView {
                 super.onPageFinished(view, url);
                 onPageLoaded();
             }
-        };        
+
+            @Override
+            public void onLoadResource(WebView view, String url) {
+                super.onLoadResource(view, url);
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                Log.d("OnPageStarted",url);
+                onChapterChanged(url);
+            }
+
+        };
     }
     
     protected void LoadUri(Uri uri) {

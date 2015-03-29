@@ -5,50 +5,33 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
-public class Bookmark{
-    public static final String PREFS_NAME = "EpubViewerPrefsFile";
-    public static final String PREFS_EPUB_NAME = "FileName";
-    public static final String PREFS_RESOURCE_URI = "ResourceUri";
-    public static final String PREFS_SCROLLY = "ScrollY";
+import java.net.URI;
 
-    public String mFileName;
-    public Uri mResourceUri;
-    public float mScrollY;
+public class Bookmark{
+
+    private String mFileName;
+    private String mResourceUri;
+    private float mScrollY;
+    private String name;
+    private int id;
 
     /*
      * ctor
      */
-    public Bookmark(String fileName, Uri resourceUri, float scrollY) {
-        mFileName = fileName;
+    public Bookmark(int id,String name, String resourceUri, float scrollY) {
+        this.name = name;
+        this.id  = id;
         mResourceUri = resourceUri;
         mScrollY = scrollY;
     }
-    
-    /*
-     * Called when user changed screen orientation
-     */
-    public Bookmark(Bundle savedInstanceState) {
-        mFileName = savedInstanceState.getString(PREFS_EPUB_NAME);
-        deserializeUri(savedInstanceState.getString(PREFS_RESOURCE_URI));
-        mScrollY = savedInstanceState.getFloat(PREFS_SCROLLY);
+
+    public Bookmark(){
+        name = "";
+        id = 0;
+        mResourceUri = "";
+        mScrollY = 0f;
     }
 
-    /*
-     * Retrieve from the Shared Preferences
-     */
-    public Bookmark(Context context) {
-        SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        mFileName = settings.getString(PREFS_EPUB_NAME, "");
-        deserializeUri(settings.getString(PREFS_RESOURCE_URI, ""));
-        mScrollY = settings.getFloat(PREFS_SCROLLY, 0.0f);
-    }
-
-    private void deserializeUri(String uri) {
-        if ((uri != null) && !uri.isEmpty()) {
-            mResourceUri = Uri.parse(uri);
-        }
-    }
-    
     /*
      * return true if bookmark is "empty", i.e. doesn't hold a useful value
      */
@@ -57,51 +40,40 @@ public class Bookmark{
                 || (mResourceUri == null));
     }
 
-    /*
-     * Write the bookmark into a bundle (normally used when screen orientation
-     * changing)
-     */
-    public void save(Bundle outState) {
-        if (!isEmpty()) {
-            outState.putString(PREFS_EPUB_NAME, mFileName);
-            outState.putString(PREFS_RESOURCE_URI, mResourceUri.toString());
-            outState.putFloat(PREFS_SCROLLY, mScrollY);
-        }
+
+    public String getName() {
+        return name;
     }
 
-    /*
-     * Write to persistent storage
-     */
-    public void saveToSharedPreferences(Context context) {
-        if (!isEmpty()) {
-            SharedPreferences settings = context.getSharedPreferences(PREFS_NAME,
-                    Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = settings.edit();
-            editor.putString(PREFS_EPUB_NAME, mFileName);
-            editor.putString(PREFS_RESOURCE_URI, mResourceUri.toString());
-            editor.putFloat(PREFS_SCROLLY, mScrollY);
-            editor.commit();
-        }
+    public void setName(String name) {
+        this.name = name;
     }
 
-    /*
-     * The epub that has been bookmarked
-     */
-    public String getFileName() {
-        return mFileName;
+    public int getId() {
+        return id;
     }
 
-    /*
-     * Chapter of book
-     */
-    public Uri getResourceUri() {
-        return mResourceUri;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    /*
-     * Position of chapter
-     */
+    public void setFileName(String mFileName) {
+        this.mFileName = mFileName;
+    }
+
     public float getScrollY() {
         return mScrollY;
+    }
+
+    public void setScrollY(float mScrollY) {
+        this.mScrollY = mScrollY;
+    }
+
+    public void setResourceUri(String mResourceUri) {
+        this.mResourceUri = mResourceUri;
+    }
+
+    public String getResourceUri() {
+        return mResourceUri;
     }
 }
