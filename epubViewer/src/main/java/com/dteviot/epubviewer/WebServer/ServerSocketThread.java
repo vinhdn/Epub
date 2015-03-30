@@ -64,8 +64,9 @@ public class ServerSocketThread extends Thread {
         try {
             // force thread out of accept().
             mServerSocket.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             // Ignore any error, nothing to do
+            e.printStackTrace();
         }
     }
 }

@@ -28,6 +28,7 @@ public abstract class EpubWebView extends WebView {
 
     public interface OnPageURLListener{
         public void onPageChange(String URL);
+        public void onPageLoaded();
     }
 
     private OnPageURLListener mPageURLListener;
@@ -306,6 +307,8 @@ public abstract class EpubWebView extends WebView {
      */
     @SuppressWarnings("deprecation")
     protected void onPageLoaded() {
+        if(mPageURLListener != null)
+            mPageURLListener.onPageLoaded();
         if (mScrollWhenPageLoaded) {
             setPictureListener(mPictureListener);
             mScrollWhenPageLoaded = false;

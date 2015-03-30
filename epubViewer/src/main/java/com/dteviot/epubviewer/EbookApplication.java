@@ -1,6 +1,9 @@
 package com.dteviot.epubviewer;
 
 import android.app.Application;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.util.Patterns;
 
 import com.dteviot.epubviewer.epub.Book;
 
@@ -9,10 +12,12 @@ import com.dteviot.epubviewer.epub.Book;
  */
 public class EbookApplication extends Application {
     private Book mBook;
+    public SharedPreferences mPref;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        this.mPref = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
     /*
@@ -31,5 +36,25 @@ public class EbookApplication extends Application {
 
     public Book getBook() {
         return mBook;
+    }
+
+    public Bookmark getLastReading(){
+        Bookmark bookmark = new Bookmark();
+        String url = mPref.getString("last_uri","");
+        if(url != null && url.startsWith("http://localhost:1025/")) {
+            int scrollY = mPref.getInt("last_scroll", 0);
+            bookmark.setResourceUri(url);
+            bookmark.setScrollY(scrollY);
+            return bookmark;
+        }
+        setLastReading("",0);
+        return bookmark;
+    }
+
+    public void setLastReading(String url,int scrollY){
+        if(url != null && url.startsWith("http://localhost:1025/")) {
+            mPref.edit().putString("last_uri",url).commit();
+            mPref.edit().putInt("last_scroll", scrollY).commit();
+        }
     }
 }

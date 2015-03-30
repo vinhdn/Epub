@@ -32,4 +32,10 @@
     <string name="another_book">Another book</string>
     <string name="rate_this_app_on_play_store">Rate this app on Play Store</string>
     <string name="like_this_app">Like this app? Your 5-star rating and Google +1 are appreciated</string>
+    <string name="table_of_contents">Table of contents</string>
+    <string name="no_bookmark">No bookmark</string>
+    <string name="to_bookmark">To bookmark the page, click to bookmark icon</string>
+    <string name="no_chapter">No chapter</string>
+    <string name="has_not_chapter">This book has not chapter</string>
+    <string name="bookmark">Bookmark</string>
 </resources>

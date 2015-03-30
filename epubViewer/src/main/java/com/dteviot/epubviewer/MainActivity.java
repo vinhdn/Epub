@@ -5,6 +5,7 @@ import com.dteviot.epubviewer.WebServer.FileRequestHandler;
 import com.dteviot.epubviewer.WebServer.ServerSocketThread;
 import com.dteviot.epubviewer.WebServer.WebServer;
 import com.dteviot.epubviewer.database.dao.MyDAOFactory;
+import com.dteviot.epubviewer.dialog.ChapterDialog;
 import com.dteviot.epubviewer.epub.Book;
 import com.dteviot.epubviewer.epub.NavPoint;
 import com.dteviot.epubviewer.epub.TableOfContents;
@@ -16,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,7 +30,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.zip.Inflater;
 
-public class MainActivity extends Activity implements IResourceSource, View.OnClickListener, EpubWebView.OnPageURLListener{
+public class MainActivity extends FragmentActivity implements IResourceSource, View.OnClickListener, EpubWebView.OnPageURLListener{
     private final static int LIST_EPUB_ACTIVITY_ID = 0; 
     private final static int LIST_CHAPTER_ACTIVITY_ID = 1; 
     private final static int CHECK_TTS_ACTIVITY_ID = 2; 
@@ -39,6 +41,7 @@ public class MainActivity extends Activity implements IResourceSource, View.OnCl
     private NavPoint mCurChapter;
     private RelativeLayout mControllerRL,mTitle;
     private EbookApplication mApp;
+    private int scrollYWeb = 0;
     /*
      * the app's main view
      */
@@ -59,15 +62,23 @@ public class MainActivity extends Activity implements IResourceSource, View.OnCl
         mEpubWebView = createView();
         mEpubWebView.setApp(mApp);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
-
-
         content.addView(mEpubWebView, params);
         mControllerRL.bringToFront();
         setContentView(view);
-
         new LoadEpubAsyncTask().execute();
         initViews();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(mCurChapter != null && mEpubWebView != null && mApp != null)
+        mApp.setLastReading(mCurChapter.getContent(),mEpubWebView.getScrollY());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     private void initViews(){
@@ -211,6 +222,21 @@ public class MainActivity extends Activity implements IResourceSource, View.OnCl
         mCurrentUrl = URL;
     }
 
+    @Override
+    public void onPageLoaded() {
+        Log.d("ScrollY",scrollYWeb + "");
+        if(scrollYWeb > 0){
+            mEpubWebView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mEpubWebView.scrollTo(0,scrollYWeb);
+                    scrollYWeb = 0;
+                }
+            },100);
+
+        }
+    }
+
     class LoadEpubAsyncTask extends AsyncTask<Void,Void,Void>{
         ProgressDialog mDialogLoading;
         @Override
@@ -228,7 +254,13 @@ public class MainActivity extends Activity implements IResourceSource, View.OnCl
         @Override
         protected Void doInBackground(Void... epubWebViews) {
             mEpubWebView.setBook("");
-            mEpubWebView.loadChapter(mEpubWebView.getBook().firstChapter());
+            Bookmark bookmark = mApp.getLastReading();
+            if(bookmark.getResourceUri().equals(""))
+                mEpubWebView.loadChapter(mEpubWebView.getBook().firstChapter());
+            else {
+                mEpubWebView.loadChapter(Uri.parse(bookmark.getResourceUri()));
+                scrollYWeb = (int)bookmark.getScrollY();
+            }
 //            mCurrentUri = getBook().firstChapter();
             mWebServerThread = createWebServer();
             mWebServerThread.startThread();
@@ -238,8 +270,6 @@ public class MainActivity extends Activity implements IResourceSource, View.OnCl
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Log.d("time 04", System.currentTimeMillis() +"");
-            Toast.makeText(MainActivity.this,"Load success",Toast.LENGTH_LONG).show();
             mDialogLoading.dismiss();
         }
     }
@@ -258,7 +288,10 @@ public class MainActivity extends Activity implements IResourceSource, View.OnCl
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if(mWebServerThread != null)
         mWebServerThread.stopThread();
+        if(mCurChapter != null && mEpubWebView != null && mApp != null)
+        mApp.setLastReading(mCurChapter.getContent(),mEpubWebView.getScrollY());
     }
 
     /*
@@ -296,7 +329,15 @@ public class MainActivity extends Activity implements IResourceSource, View.OnCl
                 finish();
                 break;
             case R.id.chapter_btn:
-                launchChaptersList();
+                ChapterDialog dialog = ChapterDialog.newInstance(this,getBook().getTableOfContents(),mCurChapter.getPlayOrder(),new ChapterDialog.OnItemClicked() {
+                    @Override
+                    public void onClicked(NavPoint item) {
+                        Log.d("Item Clicked",item.getNavLabel());
+                        Uri uri = item.getContentWithoutTag();
+                        mEpubWebView.loadChapter(uri);
+                    }
+                });
+                dialog.show(getSupportFragmentManager(),"Chapter Dialog");
                 break;
             case R.id.search_btn:
                 break;
@@ -322,6 +363,14 @@ public class MainActivity extends Activity implements IResourceSource, View.OnCl
                 }
                 break;
             case R.id.show_bookmark_btn:
+                com.dteviot.epubviewer.dialog.BookmarkDialog dialogBookmark = com.dteviot.epubviewer.dialog.BookmarkDialog.newInstance(this, mCurChapter.getPlayOrder(), new com.dteviot.epubviewer.dialog.BookmarkDialog.OnItemClicked() {
+                    @Override
+                    public void onClicked(Bookmark item) {
+                        Uri uri = Uri.parse(item.getResourceUri());
+                        mEpubWebView.loadChapter(uri);
+                    }
+                });
+                dialogBookmark.show(getSupportFragmentManager(),"Bookmark Dialog");
                 break;
         }
     }
