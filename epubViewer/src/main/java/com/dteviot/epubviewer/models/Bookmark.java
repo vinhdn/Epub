@@ -1,4 +1,4 @@
-package com.dteviot.epubviewer;
+package com.dteviot.epubviewer.models;
 
 import android.content.Context;
 import android.content.SharedPreferences;

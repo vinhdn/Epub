@@ -7,10 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.dteviot.epubviewer.Bookmark;
+import com.dteviot.epubviewer.models.Bookmark;
 import com.dteviot.epubviewer.R;
-import com.dteviot.epubviewer.epub.NavPoint;
-import com.dteviot.epubviewer.epub.TableOfContents;
 
 import java.util.ArrayList;
 

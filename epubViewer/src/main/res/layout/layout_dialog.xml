@@ -34,6 +34,8 @@
             android:paddingRight="10dp"
             android:paddingTop="10dp"
             android:visibility="gone"
+            android:scrollbarThumbHorizontal="@drawable/shape_rectangle_round_gray"
+            android:scrollbarThumbVertical="@drawable/shape_rectangle_round_gray"
             >
         </ListView>
         <LinearLayout

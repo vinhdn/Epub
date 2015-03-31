@@ -1,4 +1,4 @@
-package com.dteviot.epubviewer;
+package com.dteviot.epubviewer.Utils;
 
 
 /*
@@ -11,7 +11,7 @@ public class HrefResolver {
     private String mParentPath;
     
     public HrefResolver(String parentFileName) {
-    	mParentPath = Utility.extractPath(parentFileName); 
+    	mParentPath = Utility.extractPath(parentFileName);
     }
     
     public String ToAbsolute(String relativeHref) {

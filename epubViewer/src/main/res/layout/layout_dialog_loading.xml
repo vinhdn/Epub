@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="@dimen/height_title_actionbar"
+    android:layout_margin="10dp"
+    android:background="@drawable/shape_rectangle_round_white"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
+    android:paddingBottom="15dp"
+    android:paddingTop="15dp"
+    >
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@android:style/Widget.ProgressBar.Small"
+        />
+    <TextView
+        android:id="@+id/title_dialog_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Loading book"
+        android:layout_marginLeft="20dp"
+        android:textSize="@dimen/name_book_text_size"
+        />
+</LinearLayout>

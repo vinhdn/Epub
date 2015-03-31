@@ -12,8 +12,8 @@ import org.apache.http.protocol.HttpRequestHandler;
 
 import android.net.Uri;
 
-import com.dteviot.epubviewer.IResourceSource;
-import com.dteviot.epubviewer.ResourceResponse;
+import com.dteviot.epubviewer.Utils.IResourceSource;
+import com.dteviot.epubviewer.Utils.ResourceResponse;
 
 public class FileRequestHandler implements HttpRequestHandler {
 

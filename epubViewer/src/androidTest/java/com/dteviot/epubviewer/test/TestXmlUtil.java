@@ -13,12 +13,12 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLFilterImpl;
 import org.xmlpull.v1.XmlSerializer;
 
-import com.dteviot.epubviewer.Globals;
-import com.dteviot.epubviewer.IResourceSource;
-import com.dteviot.epubviewer.MainActivity;
-import com.dteviot.epubviewer.ResourceResponse;
-import com.dteviot.epubviewer.XhtmlToText;
-import com.dteviot.epubviewer.XmlUtil;
+import com.dteviot.epubviewer.models.Globals;
+import com.dteviot.epubviewer.Utils.IResourceSource;
+import com.dteviot.epubviewer.Activity.MainActivity;
+import com.dteviot.epubviewer.Utils.ResourceResponse;
+import com.dteviot.epubviewer.Utils.XhtmlToText;
+import com.dteviot.epubviewer.Utils.XmlUtil;
 import com.dteviot.epubviewer.XmlFilter.InlineImageElementFilter;
 import com.dteviot.epubviewer.XmlFilter.RemoveSvgElementFilter;
 import com.dteviot.epubviewer.XmlFilter.StyleSheetElementFilter;

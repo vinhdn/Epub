@@ -5,10 +5,9 @@ import java.io.InputStream;
 
 import junit.framework.Assert;
 
-import com.dteviot.epubviewer.MainActivity;
-import com.dteviot.epubviewer.XmlUtil;
+import com.dteviot.epubviewer.Activity.MainActivity;
+import com.dteviot.epubviewer.Utils.XmlUtil;
 
-import android.content.res.AssetManager;
 import android.test.ActivityUnitTestCase;
 import android.util.Base64;
 

@@ -1,14 +1,16 @@
-package com.dteviot.epubviewer;
+package com.dteviot.epubviewer.Utils.View;
 
 import java.io.StringWriter;
 
 import org.xml.sax.helpers.XMLFilterImpl;
 import org.xmlpull.v1.XmlSerializer;
 
+import com.dteviot.epubviewer.models.Globals;
 import com.dteviot.epubviewer.XmlFilter.InlineImageElementFilter;
 import com.dteviot.epubviewer.XmlFilter.RemoveSvgElementFilter;
 import com.dteviot.epubviewer.XmlFilter.StyleSheetElementFilter;
 import com.dteviot.epubviewer.XmlFilter.XmlSerializerToXmlFilterAdapter;
+import com.dteviot.epubviewer.Utils.XmlUtil;
 import com.dteviot.epubviewer.epub.Book;
 
 import android.content.Context;

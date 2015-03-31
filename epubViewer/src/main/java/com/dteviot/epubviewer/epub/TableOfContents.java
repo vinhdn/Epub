@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 
-import com.dteviot.epubviewer.HrefResolver;
+import com.dteviot.epubviewer.Utils.HrefResolver;
 
 import android.content.Intent;
 import android.sax.Element;

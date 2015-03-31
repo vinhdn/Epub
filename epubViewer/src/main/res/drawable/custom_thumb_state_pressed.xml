@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  @author : @alexduhem 
+		blog.sakaroz.com
+ -->
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <size
+        android:width="@dimen/progress_thumb_size"
+        android:height="@dimen/progress_thumb_size" />
+    <stroke
+        android:width="1dip"
+        android:color="#ff5da8d4" />
+    <gradient
+        android:startColor="#ff0e75af"
+        android:endColor="#ff1997e1"
+        android:angle="270"
+        android:type="linear" />
+</shape>

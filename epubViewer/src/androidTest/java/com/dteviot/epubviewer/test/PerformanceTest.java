@@ -3,32 +3,16 @@ package com.dteviot.epubviewer.test;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import junit.framework.Assert;
-
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.XMLFilterImpl;
-import org.xmlpull.v1.XmlSerializer;
 
-import com.dteviot.epubviewer.Globals;
-import com.dteviot.epubviewer.MainActivity;
-import com.dteviot.epubviewer.ResourceResponse;
-import com.dteviot.epubviewer.XmlUtil;
-import com.dteviot.epubviewer.XmlFilter.InlineImageElementFilter;
-import com.dteviot.epubviewer.XmlFilter.RemoveSvgElementFilter;
-import com.dteviot.epubviewer.XmlFilter.StyleSheetElementFilter;
-import com.dteviot.epubviewer.XmlFilter.XmlSerializerToXmlFilterAdapter;
-import com.dteviot.epubviewer.epub.Book;
-import com.dteviot.epubviewer.epub.ManifestItem;
+import com.dteviot.epubviewer.models.Globals;
+import com.dteviot.epubviewer.Activity.MainActivity;
 
-import android.net.Uri;
 import android.test.ActivityUnitTestCase;
-import android.util.Base64;
 import android.util.Log;
 import android.util.Xml;
 

@@ -3,14 +3,12 @@ package com.dteviot.epubviewer.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.util.Log;
 
-import com.dteviot.epubviewer.Bookmark;
+import com.dteviot.epubviewer.models.Bookmark;
 import com.dteviot.epubviewer.database.dao.DaoBase;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 /**
  * Created by vinhdo on 3/29/15.

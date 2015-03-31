@@ -7,7 +7,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.XMLFilterImpl;
 import org.xmlpull.v1.XmlSerializer;
 
-import com.dteviot.epubviewer.Globals;
+import com.dteviot.epubviewer.models.Globals;
 
 import android.util.Log;
 

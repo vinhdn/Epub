@@ -4,7 +4,7 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.dteviot.epubviewer.Globals;
+import com.dteviot.epubviewer.models.Globals;
 
 /*
  * Navpoint entry in a Table of Contents.

@@ -1,4 +1,4 @@
-package com.dteviot.epubviewer;
+package com.dteviot.epubviewer.models;
 
 public class Globals {
     public static final String TAG = "SimpleEpubViewer";

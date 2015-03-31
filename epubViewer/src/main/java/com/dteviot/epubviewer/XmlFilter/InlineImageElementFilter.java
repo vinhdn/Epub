@@ -6,9 +6,9 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.XMLFilterImpl;
 
-import com.dteviot.epubviewer.Globals;
-import com.dteviot.epubviewer.IResourceSource;
-import com.dteviot.epubviewer.XmlUtil;
+import com.dteviot.epubviewer.models.Globals;
+import com.dteviot.epubviewer.Utils.IResourceSource;
+import com.dteviot.epubviewer.Utils.XmlUtil;
 
 import android.net.Uri;
 import android.util.Log;

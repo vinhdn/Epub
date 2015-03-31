@@ -15,14 +15,11 @@ import org.jsoup.nodes.Document;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 
-import com.dteviot.epubviewer.EpubWebView;
-import com.dteviot.epubviewer.EpubWebView23;
-import com.dteviot.epubviewer.EpubWebView30;
-import com.dteviot.epubviewer.Globals;
-import com.dteviot.epubviewer.HrefResolver;
-import com.dteviot.epubviewer.IResourceSource;
-import com.dteviot.epubviewer.ResourceResponse;
-import com.dteviot.epubviewer.XmlUtil;
+import com.dteviot.epubviewer.models.Globals;
+import com.dteviot.epubviewer.Utils.HrefResolver;
+import com.dteviot.epubviewer.Utils.IResourceSource;
+import com.dteviot.epubviewer.Utils.ResourceResponse;
+import com.dteviot.epubviewer.Utils.XmlUtil;
 import com.dteviot.epubviewer.models.SearchResult;
 
 import android.content.Context;
@@ -139,42 +136,85 @@ public class Book implements IResourceSource {
         }
     }
 
-    public Book(String fileName, Context activity) throws Throwable {
+    public Book(String key, Context activity) throws Throwable {
         mContext = activity;
         InputStream is = activity.getAssets().open("code.dev");
-        String key = "fuckyou69";
-        DESKeySpec dks = new DESKeySpec(key.getBytes());
-        SecretKeyFactory skf = SecretKeyFactory.getInstance("DES");
-        SecretKey desKey = skf.generateSecret(dks);
-        Cipher cipher = Cipher.getInstance("DES");
-        cipher.init(Cipher.DECRYPT_MODE, desKey);
+        //new GetBookAsyncTask().execute(is);
+        loadBook(is,key);
+    }
 
-        byte[] encry = new byte[is.available()];
-        is.read(encry);
-        byte[] deCry = cipher.doFinal(encry);
-        //System.out.println("Decrypted Text: " + new String(deCry));
-        //Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).mkdirs();
-        File file = File.createTempFile("fifi.fuf", null, activity.getCacheDir());
-        //File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"fifi.fuf");
-        //file.createNewFile();
-        FileOutputStream fo = new FileOutputStream(file);
-        fo.write(deCry);
-        fo.flush();
-        fo.close();
-
-        mSpine = new ArrayList<ManifestItem>();
-        mManifest = new Manifest();
-        mTableOfContents = new TableOfContents();
+    private void loadBook(InputStream is,String key){
         try {
-            //mZip = new ZipFile(fileName);
-            mZip = new ZipFile(file);
-            file.delete();
-            parseEpub();
-        } catch (IOException e) {
-            Log.e(Globals.TAG, "Error opening file", e);
+            DESKeySpec dks = new DESKeySpec(key.getBytes());
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("DES");
+            SecretKey desKey = skf.generateSecret(dks);
+            Cipher cipher = Cipher.getInstance("DES");
+            cipher.init(Cipher.DECRYPT_MODE, desKey);
+
+            byte[] encry = new byte[is.available()];
+            is.read(encry);
+            byte[] deCry = cipher.doFinal(encry);
+            File file = File.createTempFile("fifi.fuf", null, mContext.getCacheDir());
+            FileOutputStream fo = new FileOutputStream(file);
+            fo.write(deCry);
+            fo.flush();
+            fo.close();
+
+            mSpine = new ArrayList<ManifestItem>();
+            mManifest = new Manifest();
+            mTableOfContents = new TableOfContents();
+            try {
+                //mZip = new ZipFile(fileName);
+                mZip = new ZipFile(file);
+                file.delete();
+                parseEpub();
+            } catch (IOException e) {
+                Log.e(Globals.TAG, "Error opening file", e);
+            }
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
     }
 
+    private class GetBookAsyncTask extends AsyncTask<InputStream,Void,Void>{
+
+        @Override
+        protected Void doInBackground(InputStream... inputStreams) {
+            InputStream is = inputStreams[0];
+            String key = "fuckyou69";
+            try {
+                DESKeySpec dks = new DESKeySpec(key.getBytes());
+                SecretKeyFactory skf = SecretKeyFactory.getInstance("DES");
+                SecretKey desKey = skf.generateSecret(dks);
+                Cipher cipher = Cipher.getInstance("DES");
+                cipher.init(Cipher.DECRYPT_MODE, desKey);
+
+                byte[] encry = new byte[is.available()];
+                is.read(encry);
+                byte[] deCry = cipher.doFinal(encry);
+                File file = File.createTempFile("fifi.fuf", null, mContext.getCacheDir());
+                FileOutputStream fo = new FileOutputStream(file);
+                fo.write(deCry);
+                fo.flush();
+                fo.close();
+
+                mSpine = new ArrayList<ManifestItem>();
+                mManifest = new Manifest();
+                mTableOfContents = new TableOfContents();
+                try {
+                    //mZip = new ZipFile(fileName);
+                    mZip = new ZipFile(file);
+                    file.delete();
+                    parseEpub();
+                } catch (IOException e) {
+                    Log.e(Globals.TAG, "Error opening file", e);
+                }
+            }catch (Exception ex){
+                ex.printStackTrace();
+            }
+            return null;
+        }
+    }
     /*
      * Name of zip file
      */
@@ -243,7 +283,7 @@ public class Book implements IResourceSource {
         for (int i = 0; i < getTableOfContents().size() - 1; i++) {
             NavPoint nv = getTableOfContents().get(i);
             if (url.equals(nv.getContent())) {
-               return getTableOfContents().get(i + 1).getContent();
+                return getTableOfContents().get(i + 1).getContent();
             }
         }
         return "";
@@ -391,11 +431,6 @@ public class Book implements IResourceSource {
      * @return URL used by WebView 
      */
     public static Uri resourceName2Url(String resourceName) {
-        // build path assuming local file.
-        // pack resourceName into path section of a file URI
-        // need to leave '/' chars in path, so WebView is aware
-        // of path to current resource, so it can can correctly resolve
-        // path of any relative URLs in the current resource.
         return new Uri.Builder().scheme(HTTP_SCHEME)
                 .encodedAuthority("localhost:" + Globals.WEB_SERVER_PORT)
                 .appendEncodedPath(Uri.encode(resourceName, "/"))
@@ -428,58 +463,26 @@ public class Book implements IResourceSource {
         ArrayList<SearchResult> results = new ArrayList<>();
         for (int i = 0; i < mSpine.size(); ++i) {
             Uri uri = resourceName2Url(mSpine.get(i).getHref());
-//            Log.d("Search ID", "URI: " + uri.toString() + " /n ID: " + mSpine.get(i).getID());
-//            webView.loadUrl(uri.toString());
             String data = getDataOfUri(uri);
 
             Document doc = Jsoup.parse(data);
             String text = doc.body().text();
-            Log.d("TEXT: ", i + " data " + text);
-            if (text.indexOf(str) >= 0) {
-                Log.d("Search ID", "URI: " + doc.title() + " /n ID: " + mSpine.get(i).getID());
-                SearchResult result = new SearchResult(uri, doc.title());
+            int index = text.indexOf(str);
+            if (index >= 0) {
+                int first = 0, last = text.length() - 1;
+                if (index > 70)
+                    first = index - 70;
+                if ((index + 70 - str.length()) < text.length())
+                    last = index + 70 - str.length();
+                String preview = text.substring(first, last);
+                SearchResult result = new SearchResult(Uri.parse(getTableOfContents().get(i).getContent()), getTableOfContents().get(i).getNavLabel(), preview);
+                results.add(result);
             }
-
         }
         return results;
     }
 
-    private EpubWebView createView() {
-        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
-            return new EpubWebView23(mContext);
-        } else {
-            return new EpubWebView30(mContext);
-        }
-    }
-
     private String getDataOfUri(Uri uri) {
-//        try {
-//            // build SAX pipeline to convert XHTML
-//            // Chain is Reader -> stylesheetFilter -> imageFilter -> Serializer
-//            XMLFilterImpl stylesheetFilter = new StyleSheetElementFilter(uri, this);
-//            XMLFilterImpl svgFilter = new RemoveSvgElementFilter();
-//            XMLFilterImpl imageFilter = new InlineImageElementFilter(uri, this);
-//            svgFilter.setParent(stylesheetFilter);
-//            imageFilter.setParent(svgFilter);
-//
-//            StringWriter writer = new StringWriter();
-//            XmlSerializer serializer = android.util.Xml.newSerializer();
-//            XmlSerializerToXmlFilterAdapter serializerFilter =
-//                    new XmlSerializerToXmlFilterAdapter(serializer);
-//            serializerFilter.setParent(imageFilter);
-//
-//            // convert the XHTML
-//            serializer.setOutput(writer);
-//            XmlUtil.parseXmlResource(this.fetch(uri).getData(), stylesheetFilter,
-//                    serializerFilter);
-//            //Log.d("data URI","URI: " + uri.toString() + " /n " + writer.toString());
-//            return writer.toString();
-//        } catch (Exception e) {
-//            Log.e(Globals.TAG, "Error generating XML ", e);
-//            // TODO construct error message HTML
-//            return "";
-//        }
-
         try {
             BufferedReader r = new BufferedReader(new InputStreamReader(fetch(uri).getData()));
             StringBuilder total = new StringBuilder();

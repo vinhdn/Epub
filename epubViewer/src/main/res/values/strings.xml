@@ -38,4 +38,11 @@
     <string name="no_chapter">No chapter</string>
     <string name="has_not_chapter">This book has not chapter</string>
     <string name="bookmark">Bookmark</string>
+    <string name="search">Search</string>
+    <string name="enter_text_here">Enter text to search</string>
+    <string name="search_text_must_least_3">Search text must be at least 3 characters.</string>
+    <string name="have_error">Have a error with this book</string>
+    <string name="loading_book">Loading book</string>
+    <string name="searching">Searching...</string>
+    <string name="no_results">No results have been found</string>
 </resources>

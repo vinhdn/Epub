@@ -1,4 +1,4 @@
-package com.dteviot.epubviewer;
+package com.dteviot.epubviewer.Utils.View;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -11,6 +11,8 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import com.dteviot.epubviewer.Utils.ResourceResponse;
 
 /*
  * EpubWebView for use with Android 3.0 and above

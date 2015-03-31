@@ -2,8 +2,7 @@ package com.dteviot.epubviewer.epub;
 
 import org.xml.sax.Attributes;
 
-import com.dteviot.epubviewer.HrefResolver;
-import com.dteviot.epubviewer.Utility;
+import com.dteviot.epubviewer.Utils.HrefResolver;
 
 /*
  * A row in the epub Manifest

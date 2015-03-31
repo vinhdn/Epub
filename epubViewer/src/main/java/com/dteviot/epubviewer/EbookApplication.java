@@ -3,9 +3,9 @@ package com.dteviot.epubviewer;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Patterns;
 
 import com.dteviot.epubviewer.epub.Book;
+import com.dteviot.epubviewer.models.Bookmark;
 
 /**
  * Created by vinhdo on 3/26/15.

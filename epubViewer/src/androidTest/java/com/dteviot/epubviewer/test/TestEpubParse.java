@@ -11,9 +11,9 @@ import junit.framework.Assert;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import com.dteviot.epubviewer.Globals;
-import com.dteviot.epubviewer.HrefResolver;
-import com.dteviot.epubviewer.MainActivity;
+import com.dteviot.epubviewer.models.Globals;
+import com.dteviot.epubviewer.Utils.HrefResolver;
+import com.dteviot.epubviewer.Activity.MainActivity;
 import com.dteviot.epubviewer.epub.Book;
 import com.dteviot.epubviewer.epub.ManifestItem;
 import com.dteviot.epubviewer.epub.TableOfContents;

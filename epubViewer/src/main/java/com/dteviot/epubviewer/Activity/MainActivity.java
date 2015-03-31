@@ -1,39 +1,43 @@
-package com.dteviot.epubviewer;
+package com.dteviot.epubviewer.Activity;
 
+import com.dteviot.epubviewer.EbookApplication;
+import com.dteviot.epubviewer.models.Globals;
+import com.dteviot.epubviewer.Utils.IResourceSource;
+import com.dteviot.epubviewer.R;
+import com.dteviot.epubviewer.Utils.ResourceResponse;
+import com.dteviot.epubviewer.Utils.Utility;
 import com.dteviot.epubviewer.Utils.SAutoBgImageButton;
+import com.dteviot.epubviewer.Utils.View.EpubWebView;
+import com.dteviot.epubviewer.Utils.View.EpubWebView23;
+import com.dteviot.epubviewer.Utils.View.EpubWebView30;
 import com.dteviot.epubviewer.WebServer.FileRequestHandler;
 import com.dteviot.epubviewer.WebServer.ServerSocketThread;
 import com.dteviot.epubviewer.WebServer.WebServer;
 import com.dteviot.epubviewer.database.dao.MyDAOFactory;
 import com.dteviot.epubviewer.dialog.ChapterDialog;
+import com.dteviot.epubviewer.dialog.LoadingDialog;
 import com.dteviot.epubviewer.epub.Book;
 import com.dteviot.epubviewer.epub.NavPoint;
 import com.dteviot.epubviewer.epub.TableOfContents;
-import com.dteviot.epubviewer.models.SearchResult;
+import com.dteviot.epubviewer.models.Bookmark;
 
-import android.app.ProgressDialog;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Activity;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
-
-import java.util.ArrayList;
-import java.util.zip.Inflater;
 
 public class MainActivity extends FragmentActivity implements IResourceSource, View.OnClickListener, EpubWebView.OnPageURLListener{
     private final static int LIST_EPUB_ACTIVITY_ID = 0; 
     private final static int LIST_CHAPTER_ACTIVITY_ID = 1; 
-    private final static int CHECK_TTS_ACTIVITY_ID = 2; 
+    private final static int CHECK_TTS_ACTIVITY_ID = 2;
+    private final static int SEARCH_ACTIVITY_ID = 3;
+
     
     public static final String BOOKMARK_EXTRA = "BOOKMARK_EXTRA";
     private Uri mCurrentUri;
@@ -42,6 +46,7 @@ public class MainActivity extends FragmentActivity implements IResourceSource, V
     private RelativeLayout mControllerRL,mTitle;
     private EbookApplication mApp;
     private int scrollYWeb = 0;
+    private String mCurrentContentSearch = "";
     /*
      * the app's main view
      */
@@ -126,36 +131,15 @@ public class MainActivity extends FragmentActivity implements IResourceSource, V
     private ServerSocketThread createWebServer() {
         FileRequestHandler handler = new FileRequestHandler(this);
         WebServer server = new WebServer(handler);
-        return new ServerSocketThread(server, Globals.WEB_SERVER_PORT); 
+        return new ServerSocketThread(server, Globals.WEB_SERVER_PORT);
     }
     
     private EpubWebView createView() {
         if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
-            return new EpubWebView23(this); 
+            return new EpubWebView23(this);
         } else {
-            return new EpubWebView30(this); 
+            return new EpubWebView30(this);
         }
-    }
-    
-    private void launchChaptersList() {
-        Book book = getBook(); 
-        if (book == null) {
-            Utility.showToast(this, R.string.no_book_selected);
-        } else {
-            TableOfContents toc = book.getTableOfContents();
-            if (toc.size() == 0) {
-                Utility.showToast(this, R.string.table_of_contents_missing);
-            } else {
-                Intent listChaptersIntent = new Intent(this, ListChaptersActivity.class);
-                toc.pack(listChaptersIntent, ListChaptersActivity.CHAPTERS_EXTRA);
-                startActivityForResult(listChaptersIntent, LIST_CHAPTER_ACTIVITY_ID);
-            }
-        }
-    }
-
-    private void launchBookmarkDialog() {
-        BookmarkDialog dlg = new BookmarkDialog(this);
-        dlg.show();
     }
 
     /*
@@ -169,14 +153,9 @@ public class MainActivity extends FragmentActivity implements IResourceSource, V
         }
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
-                case LIST_EPUB_ACTIVITY_ID:
-                    onListEpubResult(data);
+                case SEARCH_ACTIVITY_ID:
+                    onSearchResult(data);
                     break;
-
-                case LIST_CHAPTER_ACTIVITY_ID:
-                    onListChapterResult(data);
-                    break;
-                    
                 default:
                     Utility.showToast(this, R.string.something_is_badly_broken);
             }
@@ -185,16 +164,13 @@ public class MainActivity extends FragmentActivity implements IResourceSource, V
         }
     }
 
-    private void onListEpubResult(Intent data) {
-        String fileName = data.getStringExtra(ListEpubActivity.FILENAME_EXTRA);
-        loadEpub(fileName, null);
-    }
-
-    private void onListChapterResult(Intent data) {
-        Uri chapterUri = data.getParcelableExtra(ListChaptersActivity.CHAPTER_EXTRA);
-        String url = data.getStringExtra(ListChaptersActivity.CHAPTER_URL);
-        mEpubWebView.loadChapter(chapterUri);
-//        mEpubWebView.loadChapterURL(url);
+    private void onSearchResult(Intent data){
+        String uri = data.getStringExtra("URI");
+        String searchText = data.getStringExtra("SearchText");
+        if(!uri.equals("") && uri.length() > 0){
+            mCurrentContentSearch = searchText;
+            mEpubWebView.loadChapter(Uri.parse(uri));
+        }
     }
 
     @Override
@@ -235,25 +211,28 @@ public class MainActivity extends FragmentActivity implements IResourceSource, V
             },100);
 
         }
+        if(!mCurrentContentSearch.equals("") && mCurrentContentSearch.length() >= 3){
+            mEpubWebView.findAll(mCurrentContentSearch);
+            mEpubWebView.findFocus();
+            mCurrentContentSearch = "";
+        }
+
     }
 
     class LoadEpubAsyncTask extends AsyncTask<Void,Void,Void>{
-        ProgressDialog mDialogLoading;
+        LoadingDialog mDialogLoading;
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             Log.d("time 03", System.currentTimeMillis() +"");
-            mDialogLoading = new ProgressDialog(MainActivity.this,ProgressDialog.STYLE_SPINNER);
-            mDialogLoading.setIndeterminate(true);
-            mDialogLoading.setMessage("Loading book");
+            mDialogLoading = LoadingDialog.newInstance(MainActivity.this,getResources().getString(R.string.loading_book));
             mDialogLoading.setCancelable(false);
-            mDialogLoading.show();
-
+            mDialogLoading.show(getSupportFragmentManager(),"Loading dialog");
         }
 
         @Override
         protected Void doInBackground(Void... epubWebViews) {
-            mEpubWebView.setBook("");
+            mEpubWebView.setBook("fuckyou69");
             Bookmark bookmark = mApp.getLastReading();
             if(bookmark.getResourceUri().equals(""))
                 mEpubWebView.loadChapter(mEpubWebView.getBook().firstChapter());
@@ -340,6 +319,8 @@ public class MainActivity extends FragmentActivity implements IResourceSource, V
                 dialog.show(getSupportFragmentManager(),"Chapter Dialog");
                 break;
             case R.id.search_btn:
+                Intent intent = new Intent(this, SearchActivity.class);
+                startActivityForResult(intent, SEARCH_ACTIVITY_ID);
                 break;
             case R.id.bookmark_btn:
                 if(mCurChapter.getPlayOrder() > 0) {

@@ -29,5 +29,22 @@
         <item name="android:backgroundDimEnabled">true</item>
         <item name="android:windowFullscreen">false</item>
     </style>
+    <style name="CircularProgressBar">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="stroke_width">5dp</item>
+        <item name="progress" format="float">0.1</item>
+        <item name="progress_color">#ffff4444</item>
+        <item name="progress_background_color">@android:color/background_light</item>
+        <item name="marker_visible">true</item>
+        <item name="thumb_visible">true</item>
+    </style>
 
+    <style name="CustomSeekBar" parent="android:Widget.SeekBar">
+        <item name="android:progressDrawable">@drawable/custom_seek_bar</item>
+        <item name="android:thumb">@drawable/seek_bar_thumb</item>
+        <item name="android:thumbOffset">0dip</item>
+        <item name="android:maxHeight">5dp</item>
+        <item name="android:minHeight">5dp</item>
+    </style>
 </resources>

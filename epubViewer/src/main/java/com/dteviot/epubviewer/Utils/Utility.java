@@ -1,4 +1,4 @@
-package com.dteviot.epubviewer;
+package com.dteviot.epubviewer.Utils;
 
 import java.io.File;
 import java.io.IOException;

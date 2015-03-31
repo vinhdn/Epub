@@ -4,8 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import com.dteviot.epubviewer.Globals;
-import com.dteviot.epubviewer.MainActivity;
+import com.dteviot.epubviewer.models.Globals;
+import com.dteviot.epubviewer.Activity.MainActivity;
 
 import android.test.ActivityUnitTestCase;
 import android.util.Log;

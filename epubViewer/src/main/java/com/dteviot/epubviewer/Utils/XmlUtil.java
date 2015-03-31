@@ -1,4 +1,4 @@
-package com.dteviot.epubviewer;
+package com.dteviot.epubviewer.Utils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +19,9 @@ import org.xml.sax.helpers.XMLFilterImpl;
 import android.net.Uri;
 import android.util.Base64;
 import android.util.Log;
+
+import com.dteviot.epubviewer.models.Globals;
+
 /*
  * Functions for processing XML
  */
@@ -33,7 +36,7 @@ public class XmlUtil {
      * @param attributeName name of attribute to replace value for
      */
     public static AttributesImpl replaceAttributeValueWithDataUri(Uri uri,
-            IResourceSource source, 
+            IResourceSource source,
             Attributes attrs, String attributeName) throws IOException {
 
         AttributesImpl newAttrs = new AttributesImpl(attrs);

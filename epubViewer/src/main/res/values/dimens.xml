@@ -5,9 +5,11 @@
     <dimen name="height_title_actionbar">50dp</dimen>
     <dimen name="title_home_text_size">14sp</dimen>
     <dimen name="height_image_home">100dp</dimen>
+    <dimen name="height_image_another_book">70dp</dimen>
     <dimen name="height_another_book">120dp</dimen>
     <dimen name="name_book_text_size">18sp</dimen>
     <dimen name="height_image_button">50dp</dimen>
     <dimen name="height_image_button_smaller">40dp</dimen>
     <dimen name="height_image_button_small">35dp</dimen>
+    <dimen name="progress_thumb_size">15.0dip</dimen>
 </resources>

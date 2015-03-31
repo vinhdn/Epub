@@ -1,7 +1,10 @@
-package com.dteviot.epubviewer;
+package com.dteviot.epubviewer.Utils.View;
 
 import java.util.ArrayList;
 
+import com.dteviot.epubviewer.EbookApplication;
+import com.dteviot.epubviewer.R;
+import com.dteviot.epubviewer.Utils.Utility;
 import com.dteviot.epubviewer.epub.Book;
 import com.dteviot.epubviewer.epub.NavPoint;
 
@@ -14,7 +17,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -56,11 +58,6 @@ public abstract class EpubWebView extends WebView {
      * Note that we're loading from a bookmark
      */
     private boolean mScrollWhenPageLoaded = false;
-    
-    /*
-     * To speak the text
-     */
-    private TextToSpeechWrapper mTtsWrapper;
     
     /*
      * The page, as text
@@ -135,7 +132,6 @@ public abstract class EpubWebView extends WebView {
      * Chapter of book to show
      */
     public void loadChapter(Uri resourceUri) {
-        Log.d("URI Chapter Change",resourceUri.toString());
         if (mApp.getBook() != null) {
             // if no chapter resourceName supplied, default to first one.
             if (resourceUri == null) {
@@ -192,10 +188,8 @@ public abstract class EpubWebView extends WebView {
 
     public NavPoint getCurrentChapter(){
         NavPoint chapter = new NavPoint();
-        Log.d("This Chapter","URL = " + getUrl());
         for (int i = 0; i < getBook().getTableOfContents().size(); i++) {
             NavPoint nv = getBook().getTableOfContents().get(i);
-            Log.d("NavPoit", "POSITION : " + i + "  " + nv.getContent());
             if(getUrl().equals(nv.getContent()))
                 return nv;
         }
@@ -205,7 +199,6 @@ public abstract class EpubWebView extends WebView {
     public NavPoint getPositionOfUrl(String url){
         for (int i = 0; i < getBook().getTableOfContents().size(); i++) {
             NavPoint nv = getBook().getTableOfContents().get(i);
-            Log.d("NavPoit", "POSITION : " + i + "  " + nv.getContent());
             if(url.equals(nv.getContent()))
                 return nv;
         }
@@ -267,7 +260,6 @@ public abstract class EpubWebView extends WebView {
     };
 
     private boolean changeChapter(Uri resourceUri) {
-        Log.d("URI Chapter Change",resourceUri.toString());
         if (resourceUri != null) {
             loadChapter(resourceUri);
             return true;
@@ -276,21 +268,6 @@ public abstract class EpubWebView extends WebView {
             return false;
         }
     }
-
-    /*
-     * Send next piece of text to Text to speech
-     */
-    private TextToSpeech.OnUtteranceCompletedListener mCompletedListener = 
-            new TextToSpeech.OnUtteranceCompletedListener() {
-
-        @Override
-        public void onUtteranceCompleted(String utteranceId) {
-            if (mTextLine < mText.size() - 1) {
-                mTtsWrapper.speak(mText.get(++mTextLine));
-            }
-        }
-        
-    };
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -313,11 +290,6 @@ public abstract class EpubWebView extends WebView {
             setPictureListener(mPictureListener);
             mScrollWhenPageLoaded = false;
         }
-//        String[] sp = getUrl().split("#");
-//        Log.d("URL", getUrl());
-//        if(sp.length > 1){
-//            loadUrl("#" + sp[1]);
-//        }
     }
 
     protected void onChapterChanged(String url){
