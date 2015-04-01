@@ -12,13 +12,13 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         >
-        <com.dteviot.epubviewer.Utils.SAutoBgImageButton
+        <com.vinhblue.epub.Utils.SAutoBgImageButton
             android:id="@+id/home_btn"
             android:layout_width="@dimen/height_image_button"
             android:layout_height="@dimen/height_image_button"
             android:background="@drawable/homex180"
             />
-        <com.dteviot.epubviewer.Utils.SAutoBgImageButton
+        <com.vinhblue.epub.Utils.SAutoBgImageButton
             android:id="@+id/chapter_btn"
             android:layout_width="@dimen/height_image_button"
             android:layout_height="@dimen/height_image_button"
@@ -32,19 +32,19 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         >
-        <com.dteviot.epubviewer.Utils.SAutoBgImageButton
+        <com.vinhblue.epub.Utils.SAutoBgImageButton
             android:id="@+id/search_btn"
             android:layout_width="@dimen/height_image_button_smaller"
             android:layout_height="@dimen/height_image_button_smaller"
             android:background="@drawable/searchx180"
             />
-        <com.dteviot.epubviewer.Utils.SAutoBgImageButton
+        <com.vinhblue.epub.Utils.SAutoBgImageButton
             android:id="@+id/bookmark_btn"
             android:layout_width="@dimen/height_image_button_smaller"
             android:layout_height="@dimen/height_image_button_smaller"
             android:background="@drawable/bookmarkx180"
             />
-        <com.dteviot.epubviewer.Utils.SAutoBgImageButton
+        <com.vinhblue.epub.Utils.SAutoBgImageButton
             android:id="@+id/show_bookmark_btn"
             android:layout_width="@dimen/height_image_button_small"
             android:layout_height="@dimen/height_image_button_small"

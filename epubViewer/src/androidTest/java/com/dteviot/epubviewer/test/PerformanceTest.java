@@ -9,8 +9,8 @@ import java.util.zip.ZipFile;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import com.dteviot.epubviewer.models.Globals;
-import com.dteviot.epubviewer.Activity.MainActivity;
+import com.vinhblue.epub.models.Globals;
+import com.vinhblue.epub.Activity.MainActivity;
 
 import android.test.ActivityUnitTestCase;
 import android.util.Log;

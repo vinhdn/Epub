@@ -5,8 +5,8 @@ import java.io.InputStream;
 
 import junit.framework.Assert;
 
-import com.dteviot.epubviewer.Activity.MainActivity;
-import com.dteviot.epubviewer.Utils.XmlUtil;
+import com.vinhblue.epub.Activity.MainActivity;
+import com.vinhblue.epub.Utils.XmlUtil;
 
 import android.test.ActivityUnitTestCase;
 import android.util.Base64;

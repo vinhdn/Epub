@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.dteviot.epubviewer.Activity.SearchActivity">
+    tools:context="com.vinhblue.epub.Activity.SearchActivity">
     <RelativeLayout
         android:id="@+id/search_title_rl"
         android:layout_width="match_parent"
@@ -48,7 +48,7 @@
             android:gravity="center"
             android:layout_gravity="center_vertical"
             >
-            <com.dteviot.epubviewer.Utils.SAutoBgImageButton
+            <com.vinhblue.epub.Utils.SAutoBgImageButton
                 android:id="@+id/search_btn"
                 android:layout_width="@dimen/height_image_button_small"
                 android:layout_height="@dimen/height_image_button_small"

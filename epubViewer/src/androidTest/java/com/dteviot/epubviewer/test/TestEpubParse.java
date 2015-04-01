@@ -11,12 +11,12 @@ import junit.framework.Assert;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
-import com.dteviot.epubviewer.models.Globals;
-import com.dteviot.epubviewer.Utils.HrefResolver;
-import com.dteviot.epubviewer.Activity.MainActivity;
-import com.dteviot.epubviewer.epub.Book;
-import com.dteviot.epubviewer.epub.ManifestItem;
-import com.dteviot.epubviewer.epub.TableOfContents;
+import com.vinhblue.epub.models.Globals;
+import com.vinhblue.epub.Utils.HrefResolver;
+import com.vinhblue.epub.Activity.MainActivity;
+import com.vinhblue.epub.epub.Book;
+import com.vinhblue.epub.epub.ManifestItem;
+import com.vinhblue.epub.epub.TableOfContents;
 
 import android.content.res.AssetManager;
 import android.test.ActivityUnitTestCase;

@@ -13,17 +13,17 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLFilterImpl;
 import org.xmlpull.v1.XmlSerializer;
 
-import com.dteviot.epubviewer.models.Globals;
-import com.dteviot.epubviewer.Utils.IResourceSource;
-import com.dteviot.epubviewer.Activity.MainActivity;
-import com.dteviot.epubviewer.Utils.ResourceResponse;
-import com.dteviot.epubviewer.Utils.XhtmlToText;
-import com.dteviot.epubviewer.Utils.XmlUtil;
-import com.dteviot.epubviewer.XmlFilter.InlineImageElementFilter;
-import com.dteviot.epubviewer.XmlFilter.RemoveSvgElementFilter;
-import com.dteviot.epubviewer.XmlFilter.StyleSheetElementFilter;
-import com.dteviot.epubviewer.XmlFilter.XmlSerializerToXmlFilterAdapter;
-import com.dteviot.epubviewer.epub.Book;
+import com.vinhblue.epub.models.Globals;
+import com.vinhblue.epub.Utils.IResourceSource;
+import com.vinhblue.epub.Activity.MainActivity;
+import com.vinhblue.epub.Utils.ResourceResponse;
+import com.vinhblue.epub.Utils.XhtmlToText;
+import com.vinhblue.epub.Utils.XmlUtil;
+import com.vinhblue.epub.XmlFilter.InlineImageElementFilter;
+import com.vinhblue.epub.XmlFilter.RemoveSvgElementFilter;
+import com.vinhblue.epub.XmlFilter.StyleSheetElementFilter;
+import com.vinhblue.epub.XmlFilter.XmlSerializerToXmlFilterAdapter;
+import com.vinhblue.epub.epub.Book;
 
 import android.content.res.AssetManager;
 import android.net.Uri;

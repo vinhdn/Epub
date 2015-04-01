@@ -2,8 +2,8 @@ package com.dteviot.epubviewer.test;
 
 import junit.framework.Assert;
 
-import com.dteviot.epubviewer.Activity.MainActivity;
-import com.dteviot.epubviewer.Utils.Utility;
+import com.vinhblue.epub.Activity.MainActivity;
+import com.vinhblue.epub.Utils.Utility;
 
 import android.test.ActivityUnitTestCase;
 
