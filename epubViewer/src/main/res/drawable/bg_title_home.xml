@@ -12,9 +12,9 @@
 
             <gradient
                 android:angle="90"
-                android:centerColor="#e8e8e8"
-                android:endColor="#dfdfdf"
-                android:startColor="#f0f0f0"
+                android:centerColor="#4eb9fd"
+                android:endColor="#6bdbfb"
+                android:startColor="#3197ff"
                 android:type="linear" />
         </shape>
     </item>

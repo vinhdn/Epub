@@ -4,8 +4,10 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.crashlytics.android.Crashlytics;
 import com.vinhblue.epub.epub.Book;
 import com.vinhblue.epub.models.Bookmark;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by vinhdo on 3/26/15.
@@ -17,6 +19,7 @@ public class EbookApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
         this.mPref = PreferenceManager.getDefaultSharedPreferences(this);
     }
 

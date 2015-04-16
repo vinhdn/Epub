@@ -23,17 +23,15 @@
 
             <com.vinhblue.epub.Utils.SAutoBgImageButton
                 android:id="@+id/previous_btn"
-                android:layout_width="@dimen/height_image_button_small"
-                android:layout_height="@dimen/height_image_button_small"
-                android:layout_marginLeft="5dp"
+                android:layout_width="@dimen/height_image_button"
+                android:layout_height="@dimen/height_image_button"
                 android:background="@drawable/move_leftx180" />
 
             <com.vinhblue.epub.Utils.SAutoBgImageButton
                 android:id="@+id/next_btn"
-                android:layout_width="@dimen/height_image_button_small"
-                android:layout_height="@dimen/height_image_button_small"
+                android:layout_width="@dimen/height_image_button"
+                android:layout_height="@dimen/height_image_button"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="5dp"
                 android:background="@drawable/move_rightx180" />
         </RelativeLayout>
     </RelativeLayout>

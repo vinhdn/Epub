@@ -88,12 +88,15 @@ public abstract class EpubWebView extends WebView {
         super(context, attrs);
         mGestureDetector = new GestureDetector(context, mGestureListener);
         WebSettings settings = getSettings();
+        settings.setJavaScriptEnabled(true);
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         settings.setPluginState(WebSettings.PluginState.ON_DEMAND);
         settings.setBuiltInZoomControls(true);
+        settings.setDefaultZoom(WebSettings.ZoomDensity.MEDIUM);
         addWebSettings(settings);
         setWebViewClient(mWebViewClient = createWebViewClient());
         setWebChromeClient(new WebChromeClient());
+        setInitialScale(250);
     }
 
     public void setApp(EbookApplication app){
@@ -138,7 +141,7 @@ public abstract class EpubWebView extends WebView {
             if (resourceUri != null) {
                 mCurrentResourceUri = resourceUri;
                 // prevent cache, because WebSettings.LOAD_NO_CACHE doesn't always work.
-                clearCache(false);
+                //clearCache(false);
                 LoadUri(resourceUri);
             }
         }

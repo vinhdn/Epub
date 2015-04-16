@@ -33,7 +33,10 @@ public class HomeActivity extends Activity implements View.OnClickListener{
 
     private void initViews(){
         findViewById(R.id.book_in_home).setOnClickListener(this);
-        findViewById(R.id.rate).setOnClickListener(this);
+        findViewById(R.id.rate_ll).setOnClickListener(this);
+        findViewById(R.id.share_fb_btn).setOnClickListener(this);
+        findViewById(R.id.share_gplus_btn).setOnClickListener(this);
+        findViewById(R.id.share_twitter_btn).setOnClickListener(this);
         initData();
     }
 
@@ -48,8 +51,17 @@ public class HomeActivity extends Activity implements View.OnClickListener{
             case R.id.book_in_home:
                 startActivity(new Intent(this, MainActivity.class));
                 break;
-            case R.id.rate:
+            case R.id.rate_ll:
                 rate();
+                break;
+            case R.id.share_fb_btn:
+                shareFB();
+                break;
+            case R.id.share_gplus_btn:
+                shareGPlus();
+                break;
+            case R.id.share_twitter_btn:
+                shareTwitter();
                 break;
         }
     }
@@ -72,6 +84,18 @@ public class HomeActivity extends Activity implements View.OnClickListener{
         view.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
         return view;
+    }
+
+    private void shareFB(){
+
+    }
+
+    private void shareGPlus(){
+
+    }
+
+    private void shareTwitter(){
+
     }
 
     private BaseAdapter mAdapter = new BaseAdapter() {

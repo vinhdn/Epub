@@ -8,7 +8,7 @@
         android:id="@+id/home_title"
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_title_actionbar"
-        android:background="@drawable/bg_title_reading">
+        android:background="@drawable/bg_title_home">
 
         <TextView
             android:layout_width="wrap_content"
@@ -16,142 +16,210 @@
             android:layout_centerInParent="true"
             android:text="@string/home"
             android:textColor="@color/white"
-            android:textSize="@dimen/name_book_text_size" />
+            android:textSize="@dimen/title_text_size" />
     </RelativeLayout>
 
-        <RelativeLayout
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/home_title">
+
+        <LinearLayout
+            android:id="@+id/book_in_home"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/home_title"
-            >
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/shape_rectangle_round_gray"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/height_image_home"
+                android:layout_height="@dimen/height_image_home"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/logo_512"
+                android:scaleType="centerInside" />
 
             <LinearLayout
-                android:id="@+id/book_in_home"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom"
+                android:gravity="bottom"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/change_leadership"
+                    android:textSize="@dimen/name_book_text_size" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/in_developing_countries"
+                    android:textSize="@dimen/name_book_text_size" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/another_book_title"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_image_button_smaller"
+            android:layout_below="@+id/book_in_home"
+            android:background="@drawable/bg_title_home">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:text="@string/another_book"
+                android:textSize="@dimen/title_home_text_size"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/another_book_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/another_book_title"
+            android:layout_above="@+id/rate">
+
+            <ListView
+                android:id="@+id/another_book_lv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:background="@drawable/bg_selector_gray"
-                android:orientation="horizontal">
+                android:listSelector="@null"
+                android:scrollbars="none"
+                android:layout_centerInParent="true">
 
-                <ImageView
-                    android:layout_width="@dimen/height_image_home"
-                    android:layout_height="@dimen/height_image_home"
-                    android:layout_marginRight="10dp"
-                    android:background="@drawable/logo_512"
-                    android:scaleType="centerInside" />
+            </ListView>
 
+            <TextView
+                android:id="@+id/text_in_another_book"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="Network not available"
+                android:textSize="@dimen/title_home_text_size"
+                android:textStyle="italic"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/progress_in_another_book"
+                style="@android:style/Widget.ProgressBar.Small.Inverse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:indeterminate="true" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/rate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="5dp"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/another_book_data"
+                android:background="@drawable/bg_black_gradient" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="5dp"
+                android:gravity="center_vertical"
+                >
+                <com.vinhblue.epub.Utils.SAutoBgImageButton
+                    android:layout_width="@dimen/height_image_button"
+                    android:layout_height="@dimen/height_image_button"
+                    android:background="@drawable/sharex180"
+                    />
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="bottom"
-                    android:gravity="bottom"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/change_leadership"
-                        android:textSize="@dimen/name_book_text_size" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/in_developing_countries"
-                        android:textSize="@dimen/name_book_text_size" />
+                    android:layout_height="@dimen/height_image_button"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/bg_socials"
+                    >
+                    <com.vinhblue.epub.Utils.SAutoBgImageButton
+                        android:id="@+id/share_fb_btn"
+                        android:layout_width="@dimen/height_image_button_small"
+                        android:layout_height="@dimen/height_image_button_small"
+                        android:background="@drawable/fbx180"
+                        android:layout_marginLeft="5dp"
+                        />
+                    <com.vinhblue.epub.Utils.SAutoBgImageButton
+                        android:id="@+id/share_gplus_btn"
+                        android:layout_width="@dimen/height_image_button_small"
+                        android:layout_height="@dimen/height_image_button_small"
+                        android:background="@drawable/gplusx180"
+                        android:layout_marginLeft="20dp"
+                        />
+                    <com.vinhblue.epub.Utils.SAutoBgImageButton
+                        android:id="@+id/share_twitter_btn"
+                        android:layout_width="@dimen/height_image_button_small"
+                        android:layout_height="@dimen/height_image_button_small"
+                        android:background="@drawable/twiterx180"
+                        android:layout_marginLeft="20dp"
+                        />
                 </LinearLayout>
             </LinearLayout>
 
-            <RelativeLayout
-                android:id="@+id/another_book_title"
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/height_image_button_smaller"
-                android:layout_below="@+id/book_in_home"
-                android:background="@drawable/bg_title_home">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="10dp"
-                    android:text="@string/another_book"
-                    android:textSize="@dimen/title_home_text_size"
-                    android:textStyle="bold" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/another_book_data"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/another_book_title"
-                android:layout_above="@+id/rate"
-                >
-
-                <ListView
-                    android:id="@+id/another_book_lv"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:listSelector="@null"
-                    android:scrollbars="none"
-                    android:layout_centerInParent="true">
-
-                </ListView>
-
-                <TextView
-                    android:id="@+id/text_in_another_book"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:gravity="center"
-                    android:text="Network not available"
-                    android:textSize="@dimen/title_home_text_size"
-                    android:textStyle="italic"
-                    android:visibility="gone" />
-
-                <ProgressBar
-                    android:id="@+id/progress_in_another_book"
-                    style="@android:style/Widget.ProgressBar.Small.Inverse"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:indeterminate="true" />
-            </RelativeLayout>
+                android:layout_height="1dp"
+                android:layout_below="@+id/another_book_data"
+                android:background="@drawable/bg_black_gradient" />
 
             <LinearLayout
-                android:id="@+id/rate"
+                android:id="@+id/rate_ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="5dp"
+                android:orientation="horizontal"
                 android:background="@drawable/bg_selector_gray"
-                android:orientation="vertical">
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_below="@+id/another_book_data"
-                    android:background="@drawable/bg_black_gradient" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginRight="50dp"
-                    android:layout_marginTop="5dp"
-                    android:text="@string/rate_this_app_on_play_store"
-                    android:textSize="@dimen/title_home_text_size"
-                    android:textStyle="bold" />
-
-                <TextView
+                >
+                <com.vinhblue.epub.Utils.SAutoBgImageButton
+                    android:layout_width="@dimen/height_image_button_smaller"
+                    android:layout_height="@dimen/height_image_button_smaller"
+                    android:background="@drawable/starx180"
+                    android:layout_gravity="center_vertical"
+                    android:layout_margin="5dp"
+                    />
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginRight="50dp"
-                    android:text="@string/like_this_app"
-                    android:textSize="@dimen/title_home_text_size" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="50dp"
+                        android:layout_marginTop="5dp"
+                        android:text="@string/rate_this_app_on_play_store"
+                        android:textSize="@dimen/title_home_text_size"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="50dp"
+                        android:text="@string/like_this_app"
+                        android:textSize="@dimen/title_home_text_size" />
+                </LinearLayout>
             </LinearLayout>
+        </LinearLayout>
 
-        </RelativeLayout>
+    </RelativeLayout>
 </RelativeLayout>

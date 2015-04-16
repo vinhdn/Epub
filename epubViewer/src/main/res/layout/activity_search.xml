@@ -2,22 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/shape_rectangle_round_white"
     tools:context="com.vinhblue.epub.Activity.SearchActivity">
-    <RelativeLayout
-        android:id="@+id/search_title_rl"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/height_title_actionbar"
-        android:background="@drawable/bg_title_reading">
 
-        <TextView
-            android:id="@+id/title_search_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/search"
-            android:textColor="@color/white"
-            android:textSize="@dimen/name_book_text_size" />
-    </RelativeLayout>
     <LinearLayout
         android:id="@+id/search_layout"
         android:layout_width="match_parent"

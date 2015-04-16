@@ -1,6 +1,7 @@
 package com.vinhblue.epub.Activity;
 
 import com.vinhblue.epub.EbookApplication;
+import com.vinhblue.epub.dialog.SearchDialog;
 import com.vinhblue.epub.models.Globals;
 import com.vinhblue.epub.Utils.IResourceSource;
 import com.vinhblue.epub.R;
@@ -65,7 +66,7 @@ public class MainActivity extends FragmentActivity implements IResourceSource, V
         mControllerRL = (RelativeLayout)view.findViewById(R.id.controller);
         mEpubWebView = createView();
         mEpubWebView.setApp(mApp);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
         content.addView(mEpubWebView, params);
         mControllerRL.bringToFront();
         setContentView(view);
@@ -76,8 +77,10 @@ public class MainActivity extends FragmentActivity implements IResourceSource, V
     @Override
     protected void onPause() {
         super.onPause();
-        if(mCurChapter != null && mEpubWebView != null && mApp != null)
-        mApp.setLastReading(mCurChapter.getContent(),mEpubWebView.getScrollY());
+        if(mCurChapter != null && mEpubWebView != null && mApp != null) {
+            Log.d("Scale", mEpubWebView.getScale() + "   " + mEpubWebView.getScrollY());
+            mApp.setLastReading(mCurChapter.getContent(), (int)(mEpubWebView.getScrollY() * 2.5f / mEpubWebView.getScale()));
+        }
     }
 
     @Override
@@ -199,7 +202,7 @@ public class MainActivity extends FragmentActivity implements IResourceSource, V
 
     @Override
     public void onPageLoaded() {
-        Log.d("ScrollY",scrollYWeb + "");
+        Log.d("ScrollY", scrollYWeb + "");
         if(scrollYWeb > 0){
             mEpubWebView.postDelayed(new Runnable() {
                 @Override
@@ -268,8 +271,10 @@ public class MainActivity extends FragmentActivity implements IResourceSource, V
         super.onDestroy();
         if(mWebServerThread != null)
         mWebServerThread.stopThread();
-        if(mCurChapter != null && mEpubWebView != null && mApp != null)
-        mApp.setLastReading(mCurChapter.getContent(),mEpubWebView.getScrollY());
+        if(mCurChapter != null && mEpubWebView != null && mApp != null) {
+            Log.d("Scale", mEpubWebView.getScale() + "   " + mEpubWebView.getScrollY());
+            mApp.setLastReading(mCurChapter.getContent(), (int)(mEpubWebView.getScrollY() * 2.5f / mEpubWebView.getScale()));
+        }
     }
 
     /*
@@ -318,8 +323,18 @@ public class MainActivity extends FragmentActivity implements IResourceSource, V
                 dialog.show(getSupportFragmentManager(),"Chapter Dialog");
                 break;
             case R.id.search_btn:
-                Intent intent = new Intent(this, SearchActivity.class);
-                startActivityForResult(intent, SEARCH_ACTIVITY_ID);
+//                Intent intent = new Intent(this, SearchActivity.class);
+//                startActivityForResult(intent, SEARCH_ACTIVITY_ID);
+                SearchDialog dialogSearch = SearchDialog.newInstance(this, new SearchDialog.OnItemSearchClick() {
+                    @Override
+                    public void onClick(String uri, String searchText) {
+                        if(!uri.equals("") && uri.length() > 0){
+                            mCurrentContentSearch = searchText;
+                            mEpubWebView.loadChapter(Uri.parse(uri));
+                        }
+                    }
+                });
+                dialogSearch.show(getSupportFragmentManager(),"Search Dialog");
                 break;
             case R.id.bookmark_btn:
                 if(mCurChapter.getPlayOrder() > 0) {
