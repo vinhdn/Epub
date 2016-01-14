@@ -235,11 +235,23 @@ public class MainActivity extends FragmentActivity implements IResourceSource, V
         @Override
         protected Void doInBackground(Void... epubWebViews) {
             mEpubWebView.setBook("fuckyou69");
-            Bookmark bookmark = mApp.getLastReading();
-            if(bookmark.getResourceUri().equals(""))
-                mEpubWebView.loadChapter(mEpubWebView.getBook().firstChapter());
+            final Bookmark bookmark = mApp.getLastReading();
+            if(bookmark.getResourceUri().equals("")) {
+              mEpubWebView.post(new Runnable() {
+                  @Override
+                  public void run() {
+                      mEpubWebView.loadChapter(mEpubWebView.getBook().firstChapter());
+                  }
+              }) ;
+            }
             else {
-                mEpubWebView.loadChapter(Uri.parse(bookmark.getResourceUri()));
+                mEpubWebView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mEpubWebView.loadChapter(Uri.parse(bookmark.getResourceUri()));
+                    }
+                });
+
                 scrollYWeb = (int)bookmark.getScrollY();
             }
 //            mCurrentUri = getBook().firstChapter();
